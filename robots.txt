@@ -1,0 +1,8 @@
+# Restaurante Silvano — Tomás Jofré
+# Las URLs de preview de Vercel se bloquean por cabecera (X-Robots-Tag),
+# no acá: robots.txt no impide la indexación, solo el rastreo.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://silvano.com.ar/sitemap.xml

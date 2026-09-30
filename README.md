@@ -254,7 +254,117 @@ Después: http://localhost:3000
 
 ---
 
-## 6. Notas técnicas
+## 6. Seguridad
+
+### Qué previene cada cosa
+
+| Medida | Ataque que previene |
+|---|---|
+| `Content-Security-Policy` sin `unsafe-inline`/`unsafe-eval` en `script-src` | XSS: aunque alguien logre inyectar HTML, el navegador no ejecuta el script |
+| Librerías self-hosted en `/vendor` | Supply chain: un CDN comprometido ya no puede inyectar código |
+| `frame-ancestors 'none'` + `X-Frame-Options: DENY` | Clickjacking: nadie puede meter el sitio en un iframe y robar clics |
+| `rel="noopener noreferrer"` en los 11 links externos | Reverse tabnabbing: la pestaña abierta no puede reescribir la original |
+| `Strict-Transport-Security` con preload | SSL stripping y downgrade a HTTP |
+| `X-Content-Type-Options: nosniff` | Que un .jpg subido sea interpretado como script |
+| `base-uri 'none'` | Secuestro de rutas relativas vía `<base>` inyectado |
+| `form-action 'none'` | Que un formulario inyectado envíe datos a un servidor ajeno |
+| `Permissions-Policy` | Acceso a cámara, micrófono, ubicación y pagos desde código inyectado |
+| `Cross-Origin-Opener-Policy: same-origin` | Ataques entre ventanas (XS-Leaks) |
+| `sandbox` en el iframe de Google Maps | Que el mapa pueda navegar o actuar sobre la página que lo contiene |
+
+### Dos decisiones que conviene entender
+
+**`style-src-attr` permite `unsafe-inline`, y es a propósito.** GSAP y
+ScrollTrigger usan `element.style.cssText` (10 veces entre las dos librerías,
+verificado en el código). Una `style-src` totalmente estricta rompe los pins y
+las animaciones. La solución es separar las directivas:
+
+```
+style-src-elem 'self' https://fonts.googleapis.com;   <- hojas de estilo: estricto
+style-src-attr 'unsafe-inline';                        <- atributos style: permitido
+```
+
+Las hojas de estilo siguen bajo control estricto (nadie puede inyectar un
+`<style>` ni cargar CSS externo); lo único permitido es el atributo `style`,
+que es lo que GSAP necesita. Inline en `style` habilita exfiltración por CSS,
+que es mucho menos grave que ejecutar código. `style-src` queda como respaldo
+para navegadores que no soportan las directivas granulares.
+
+**El JSON-LD va por hash.** El bloque `application/ld+json` es el único script
+inline. Está declarado en la CSP con su SHA-256:
+
+```
+'sha256-4R4nwL/za69Oq0r5sb5HhgcIeRj96JJG+GRfIAQVX1A='
+```
+
+> **Si editás el JSON-LD, aunque sea un espacio, hay que recalcular el hash o
+> el bloque deja de validar.** Se recalcula con:
+>
+> ```bash
+> python -c "import re,hashlib,base64,io; s=io.open('index.html',encoding='utf-8').read(); c=re.search(r'<script type=\"application/ld\+json\">(.*?)</script>',s,re.S).group(1); print('sha256-'+base64.b64encode(hashlib.sha256(c.encode()).digest()).decode())"
+> ```
+
+### Si algún día se agrega un formulario
+
+Hoy no hay ninguno y por eso `form-action` está en `'none'`. El mínimo para
+agregar uno:
+
+- Validación en cliente **y** en servidor. La del cliente es usabilidad, no
+  seguridad: se saltea con curl.
+- Campo honeypot oculto: si viene lleno, es un bot.
+- Rate limiting por IP.
+- Cloudflare Turnstile o reCAPTCHA v3.
+- Envío por una Vercel Function o Formspree. **Nunca poner el correo de destino
+  en el HTML**: se lo llevan los scrapers en minutos.
+- Actualizar la CSP: `form-action` tiene que apuntar al destino real, y
+  `connect-src` sumar el endpoint si el envío es por `fetch`.
+
+### Si algún día se agrega npm
+
+- Commitear `package-lock.json`.
+- `npm audit` en cada instalación.
+- Activar Dependabot en el repo (Settings → Code security).
+- Sin source maps en producción.
+
+### Checklist de infraestructura
+
+- [ ] 2FA en Vercel
+- [ ] 2FA en GitHub
+- [ ] 2FA en el registrador del dominio (NIC.ar para `.com.ar`)
+- [ ] Rama `main` protegida (Settings → Branches → Add rule)
+- [ ] HTTPS forzado (Vercel lo hace solo) y redirect `www` → apex en el panel
+- [ ] Registro **CAA** en el DNS: `0 issue "letsencrypt.org"`
+- [ ] **SPF** en el DNS: `v=spf1 -all` si el dominio no manda correo
+- [ ] **DMARC** en el DNS: `_dmarc` → `v=DMARC1; p=reject; rua=mailto:[CORREO]`
+- [ ] Completar `[CORREO-DE-CONTACTO]` y la fecha `Expires` en `security.txt`
+- [ ] Reemplazar `silvano.com.ar` por el dominio real en `canonical`, Open
+      Graph, `schema.org`, `robots.txt` y `sitemap.xml`
+
+Los registros SPF y DMARC importan aunque el dominio no mande correo:
+**sin ellos, cualquiera puede mandar mails falsificando el dominio** para
+phishing a nombre del restaurante.
+
+### Verificación post-deploy
+
+| Herramienta | Objetivo |
+|---|---|
+| [securityheaders.com](https://securityheaders.com) | **A+** |
+| [CSP Evaluator de Google](https://csp-evaluator.withgoogle.com) | Sin hallazgos de severidad alta |
+| [Mozilla Observatory](https://observatory.mozilla.org) | **A+** (90+) |
+| [SSL Labs](https://www.ssllabs.com/ssltest/) | **A** o **A+** |
+| Lighthouse (pestaña Chrome DevTools) | 90+ en las cuatro categorías |
+
+Pegá el dominio en cada una después del primer deploy con dominio propio. En el
+CSP Evaluator va a marcar `style-src-attr 'unsafe-inline'` como observación:
+es esperado y está explicado arriba.
+
+**Lo primero que hay que mirar después del deploy** es la consola del navegador
+(F12). Si la CSP bloquea algo, aparece ahí con el mensaje "Refused to load...".
+El sitio tiene que verse y animarse exactamente igual que en local.
+
+---
+
+## 7. Notas técnicas
 
 - **Reduced motion**: con `prefers-reduced-motion: reduce` no se instancia
   Lenis, no hay pins ni parallax, el video no se reproduce y la timeline de

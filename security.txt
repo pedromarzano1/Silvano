@@ -1,0 +1,10 @@
+# Restaurante Silvano — contacto para reportes de seguridad
+# https://www.rfc-editor.org/rfc/rfc9116
+
+Contact: mailto:[CORREO-DE-CONTACTO]
+Expires: 2027-09-30T00:00:00.000Z
+Preferred-Languages: es, en
+Canonical: https://silvano.com.ar/.well-known/security.txt
+
+# Sitio estático sin backend ni base de datos. Si encontrás algo,
+# escribinos y respondemos. No hay programa de recompensas.

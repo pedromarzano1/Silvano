@@ -1465,6 +1465,132 @@ img.is-missing { visibility: hidden; }
 .cta__bg.has-missing-img { background-color: var(--c-espresso-2); }
 
 /* ============================================================================
+   16b-bis. PÁGINAS DE TEXTO (privacidad, términos, 404)
+   Mismo sistema de color y tipografía que la landing, en una sola columna.
+   ========================================================================== */
+.doc-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--c-bone);
+}
+.doc-header__inner {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: var(--sp-4) var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+.doc-back {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--accent);
+}
+.doc-back:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.doc {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: var(--sp-8) var(--gutter) var(--sp-9);
+}
+.doc__eyebrow {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--sp-3);
+}
+.doc__title {
+  font-size: var(--fs-2xl);
+  margin-bottom: var(--sp-3);
+}
+.doc__updated {
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+  padding-bottom: var(--sp-6);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--sp-6);
+}
+.doc h2 {
+  font-size: var(--fs-xl);
+  margin-top: var(--sp-7);
+  margin-bottom: var(--sp-3);
+}
+.doc h3 {
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--text-strong);
+  margin-top: var(--sp-5);
+  margin-bottom: var(--sp-2);
+}
+.doc p { margin-bottom: var(--sp-4); }
+.doc ul {
+  list-style: disc;
+  padding-left: 1.4em;
+  margin-bottom: var(--sp-4);
+}
+.doc ul li { margin-bottom: var(--sp-2); }
+.doc a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.doc a:hover { color: var(--c-red-dark); }
+.doc strong { color: var(--text-strong); }
+
+/* Dato que el cliente todavía tiene que completar */
+.doc mark {
+  background: rgba(214, 42, 27, .1);
+  color: var(--c-red-dark);
+  border: 1px dashed rgba(214, 42, 27, .45);
+  border-radius: var(--r-sm);
+  padding: 0 .35em;
+  font-weight: 600;
+}
+
+.doc__box {
+  padding: var(--sp-5);
+  background: var(--c-bone-deep);
+  border-radius: var(--r-md);
+  border-left: 3px solid var(--c-red);
+  margin-bottom: var(--sp-5);
+}
+.doc__box p:last-child { margin-bottom: 0; }
+
+.doc-foot {
+  border-top: 1px solid var(--line);
+  padding: var(--sp-5) var(--gutter);
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+}
+.doc-foot a { color: var(--accent); }
+
+/* --- 404 --- */
+.err {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: var(--sp-7) var(--gutter);
+  background: var(--c-espresso);
+  color: var(--text-on-dark);
+}
+.err__inner { display: grid; justify-items: center; gap: var(--sp-4); max-width: 34rem; }
+.err__code {
+  font-family: var(--font-serif);
+  font-size: var(--fs-4xl);
+  font-weight: 700;
+  line-height: .9;
+  color: var(--c-sky);
+}
+.err__title { font-size: var(--fs-2xl); color: var(--c-white); }
+.err__text { color: rgba(248, 244, 238, .8); font-weight: 300; }
+.err__mark { width: 5rem; height: 5rem; border-radius: 50%; }
+
+/* ============================================================================
    16c. RENDIMIENTO EN PANTALLA TÁCTIL
    El compositor de un teléfono recalcula blur y blend en cada frame de scroll.
    Son los dos efectos que más cuestan y los que menos se notan en pantalla

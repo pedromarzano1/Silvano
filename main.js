@@ -718,7 +718,8 @@
       if (!dotsWrap) return;
       const count = maxIndex() + 1;
       if (dots.length === count) return;
-      dotsWrap.innerHTML = '';
+      // replaceChildren en vez de innerHTML: no pasa por el parser de HTML
+      dotsWrap.replaceChildren();
       dots.length = 0;
       const single = perView() === 1;
       for (let i = 0; i < count; i++) {
