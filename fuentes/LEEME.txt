@@ -1,0 +1,20 @@
+Capturas y fotos originales de las que salieron los recortes de assets/img/.
+
+Material de trabajo: esta carpeta NO se publica (ver .vercelignore).
+Se conserva versionada para poder rehacer un recorte sin volver a pedir
+las fotos.
+
+  cien-anios.webp        el cartel de 100 anos en el patio
+  bebidas.jfif           gaseosa, agua y el vaso con limon
+  picada.png             la entrada: salame, jamon crudo y queso
+  fachada.webp           la entrada AL LOCAL: el surtidor y el cartel
+  logo.png               foto de perfil de Instagram, de donde sale el logo
+  menu.png               el menu publicado, y los raviolones crudos abajo
+  ravioles-oliva.png     raviolones con oliva y queso
+  ravioles-estofado.png  raviolones con estofado de pollo
+  tallarines.png         tallarines con manteca y queso
+  zabaglione.png         el postre en copa
+
+Ojo: "picada.png" es el plato de entrada y "fachada.webp" es la entrada
+del edificio. Antes se llamaban entrada.png y entrada_restaurante.webp,
+lo que ya generó una confusión.

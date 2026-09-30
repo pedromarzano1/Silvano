@@ -1,9 +1,8 @@
-# Capturas y originales que usamos para recortar los assets.
-# Son material de trabajo: no se publican.
-# Los patrones van anclados a la raíz, así que assets/img/ no se toca.
-/*.png
-/*.jpg
-/*.jpeg
-/*.jfif
-/*.webp
+# Lo que no se publica en Vercel.
+
+# Capturas y fotos originales de las que salen los recortes de assets/img/.
+# Son material de trabajo y pesan ~29 MB.
+fuentes/
+
+# Documentación interna del proyecto.
 README.md

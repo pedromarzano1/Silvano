@@ -1,10 +1,15 @@
 # Restaurante Silvano — contacto para reportes de seguridad
 # https://www.rfc-editor.org/rfc/rfc9116
 
-Contact: mailto:[CORREO-DE-CONTACTO]
+Contact: https://wa.me/5492324453130
 Expires: 2027-09-30T00:00:00.000Z
 Preferred-Languages: es, en
 Canonical: https://silvano.com.ar/.well-known/security.txt
 
-# Sitio estático sin backend ni base de datos. Si encontrás algo,
-# escribinos y respondemos. No hay programa de recompensas.
+# Sitio estático, sin backend, sin base de datos y sin cuentas de usuario.
+# Si encontrás algo, escribinos por WhatsApp y respondemos.
+# No hay programa de recompensas.
+#
+# Nota: el contacto es un enlace de WhatsApp porque el establecimiento
+# todavía no tiene casilla de correo. Cuando exista, reemplazar por
+# "Contact: mailto:..." y actualizar la fecha de Expires.

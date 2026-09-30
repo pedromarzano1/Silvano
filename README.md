@@ -14,9 +14,10 @@ vercel.json     headers y cache para el deploy estático
 .vercelignore   deja afuera las capturas originales de Instagram
 assets/img/     imágenes
 assets/video/   video del hero (pendiente)
-*.png, *.webp   capturas originales de Instagram, material de trabajo
-                (ojo: entrada.png es la picada; entrada_restaurante.webp
-                 es la fachada del local)
+vendor/         GSAP, ScrollTrigger y Lenis servidos desde el propio dominio
+fuentes/        capturas y fotos originales (no se publican, ver .vercelignore)
+privacidad.html, terminos.html, 404.html
+robots.txt, sitemap.xml, security.txt
 ```
 
 ---
@@ -56,25 +57,25 @@ Dos advertencias si tocás la paleta:
 
 | Archivo | Origen | Qué es |
 |---|---|---|
-| `logo-silvano.png` (256²) | `logo.png` | recorte circular con alpha, sin el botón de corazón de Instagram |
-| `favicon-64.png`, `apple-touch-icon.png` | `logo.png` | lo mismo, en chico |
-| `hero-poster.jpg` (1920×1054) | `menu.png` | raviolones crudos sobre la mesada |
-| `menu-01-entrada.jpg` | `entrada.png` | salame, jamón crudo, queso y pan |
-| `menu-02-pastas.jpg` | `ravioles_estofado_pollo.png` | raviolones con estofado |
-| `menu-03-postre.jpg` | `zabaglione.png` | zabaglione en copa |
-| `galeria-pastas-01.jpg` | `ravioles.png` | raviolones con oliva y queso |
-| `galeria-pastas-02.jpg` | `tallarines.png` | tallarines con manteca y queso |
-| `galeria-pastas-03.jpg` | `menu.png` | raviolones crudos (foto ancha) |
-| `galeria-pastas-04.jpg` | `ravioles_estofado_pollo.png` | el estofado, recorte cuadrado |
-| `cta-bg.jpg`, `og-image.jpg` | `ravioles_estofado_pollo.png` | fondo del CTA y preview de WhatsApp |
-| `historia-1934.jpg` | `entrada_restaurante.webp` | la fachada: hito 1934 de la timeline |
-| `galeria-historia-02.jpg` | `entrada_restaurante.webp` | la fachada con el cartel, recorte ancho |
-| `galeria-jardin-01.jpg` | `100años.webp` | el cartel de los 100 años en el patio (recortado para dejar afuera a la persona del borde) |
-| `menu-04-bebida.jpg` | `Bebidas.jfif` | gaseosa, agua y el vaso con limón sobre la mesa |
-| `historia-1905.jpg` | `entrada_restaurante.webp` | la casa vieja, el árbol y el carro |
-| `historia-1924.jpg` | `100años.webp` | la pared de ladrillo del propio local |
-| `historia-1963.jpg` | `100años.webp` | la puerta y el salón que se ve adentro |
-| `historia-hoy.jpg` | `menu.png` | los raviolones recién cerrados |
+| `logo-silvano.png` (256²) | `fuentes/logo.png` | recorte circular con alpha, sin el botón de corazón de Instagram |
+| `favicon-64.png`, `apple-touch-icon.png` | `fuentes/logo.png` | lo mismo, en chico |
+| `hero-poster.jpg` (1920×1054) | `fuentes/menu.png` | raviolones crudos sobre la mesada |
+| `menu-01-entrada.jpg` | `fuentes/picada.png` | salame, jamón crudo, queso y pan |
+| `menu-02-pastas.jpg` | `fuentes/ravioles-estofado.png` | raviolones con estofado |
+| `menu-03-postre.jpg` | `fuentes/zabaglione.png` | zabaglione en copa |
+| `galeria-pastas-01.jpg` | `fuentes/ravioles-oliva.png` | raviolones con oliva y queso |
+| `galeria-pastas-02.jpg` | `fuentes/tallarines.png` | tallarines con manteca y queso |
+| `galeria-pastas-03.jpg` | `fuentes/menu.png` | raviolones crudos (foto ancha) |
+| `galeria-pastas-04.jpg` | `fuentes/ravioles-estofado.png` | el estofado, recorte cuadrado |
+| `cta-bg.jpg`, `og-image.jpg` | `fuentes/ravioles-estofado.png` | fondo del CTA y preview de WhatsApp |
+| `historia-1934.jpg` | `fuentes/fachada.webp` | la fachada: hito 1934 de la timeline |
+| `galeria-historia-02.jpg` | `fuentes/fachada.webp` | la fachada con el cartel, recorte ancho |
+| `galeria-jardin-01.jpg` | `fuentes/cien-anios.webp` | el cartel de los 100 años en el patio (recortado para dejar afuera a la persona del borde) |
+| `menu-04-bebida.jpg` | `fuentes/bebidas.jfif` | gaseosa, agua y el vaso con limón sobre la mesa |
+| `historia-1905.jpg` | `fuentes/fachada.webp` | la casa vieja, el árbol y el carro |
+| `historia-1924.jpg` | `fuentes/cien-anios.webp` | la pared de ladrillo del propio local |
+| `historia-1963.jpg` | `fuentes/cien-anios.webp` | la puerta y el salón que se ve adentro |
+| `historia-hoy.jpg` | `fuentes/menu.png` | los raviolones recién cerrados |
 
 Todos se recortaron sacando la interfaz de Instagram (barra de estado, botón
 Seguir, el texto de la story y el marco rojo).
@@ -92,11 +93,11 @@ comparten archivo de origen, aunque con recortes de temas distintos:
 
 | Hito | Origen | Qué se ve |
 |---|---|---|
-| 1905 | `entrada_restaurante.webp` | la casa vieja, el árbol y el carro |
-| 1924 | `100años.webp` | la pared de ladrillo |
-| 1934 | `entrada_restaurante.webp` | la fachada con el cartel y el surtidor |
-| 1963 | `100años.webp` | la puerta y el salón que se ve adentro |
-| Hoy | `menu.png` | los raviolones recién cerrados |
+| 1905 | `fuentes/fachada.webp` | la casa vieja, el árbol y el carro |
+| 1924 | `fuentes/cien-anios.webp` | la pared de ladrillo |
+| 1934 | `fuentes/fachada.webp` | la fachada con el cartel y el surtidor |
+| 1963 | `fuentes/cien-anios.webp` | la puerta y el salón que se ve adentro |
+| Hoy | `fuentes/menu.png` | los raviolones recién cerrados |
 
 Cuando aparezcan fotos reales de archivo, se pisan con el mismo nombre y el
 problema desaparece solo.
@@ -336,7 +337,11 @@ agregar uno:
 - [ ] Registro **CAA** en el DNS: `0 issue "letsencrypt.org"`
 - [ ] **SPF** en el DNS: `v=spf1 -all` si el dominio no manda correo
 - [ ] **DMARC** en el DNS: `_dmarc` → `v=DMARC1; p=reject; rua=mailto:[CORREO]`
-- [ ] Completar `[CORREO-DE-CONTACTO]` y la fecha `Expires` en `security.txt`
+- [ ] **Crear una casilla de correo** cuando exista el dominio (por ejemplo
+      `hola@silvano.com.ar`) y reemplazar el contacto de WhatsApp en
+      `security.txt`, `privacidad.html` y `terminos.html`. Hoy el único canal
+      documentado es WhatsApp, que es válido pero no ideal para ejercer
+      derechos de protección de datos.
 - [ ] Reemplazar `silvano.com.ar` por el dominio real en `canonical`, Open
       Graph, `schema.org`, `robots.txt` y `sitemap.xml`
 
