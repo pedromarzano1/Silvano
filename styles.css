@@ -1113,6 +1113,9 @@ body.cursor-dark .cursor__ring { border-color: rgba(158, 203, 217, .6); }
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--sp-3);
+  /* dense: las fotos anchas y altas dejan huecos al reordenarse con el
+     filtro, y esto los rellena con las que entran despues */
+  grid-auto-flow: dense;
 }
 .galeria__item {
   /* sin will-change: solo se anima al filtrar, y GSAP lo pone mientras dura */

@@ -68,11 +68,10 @@ Dos advertencias si tocás la paleta:
 | `galeria-pastas-04.jpg` | `ravioles_estofado_pollo.png` | el estofado, recorte cuadrado |
 | `cta-bg.jpg`, `og-image.jpg` | `ravioles_estofado_pollo.png` | fondo del CTA y preview de WhatsApp |
 | `historia-1934.jpg` | `entrada_restaurante.webp` | la fachada: hito 1934 de la timeline |
-| `galeria-historia-01.jpg` | `entrada_restaurante.webp` | el surtidor, recorte vertical |
 | `galeria-historia-02.jpg` | `entrada_restaurante.webp` | la fachada con el cartel, recorte ancho |
 | `galeria-jardin-01.jpg` | `100años.webp` | el cartel de los 100 años en el patio (recortado para dejar afuera a la persona del borde) |
 | `menu-04-bebida.jpg` | `Bebidas.jfif` | gaseosa, agua y el vaso con limón sobre la mesa |
-| `historia-1905.jpg` | `entrada_restaurante.webp` | los árboles y el cielo, como textura del campo |
+| `historia-1905.jpg` | `entrada_restaurante.webp` | la casa vieja, el árbol y el carro |
 | `historia-1924.jpg` | `100años.webp` | la pared de ladrillo del propio local |
 | `historia-1963.jpg` | `100años.webp` | la puerta y el salón que se ve adentro |
 | `historia-hoy.jpg` | `menu.png` | los raviolones recién cerrados |
@@ -88,7 +87,19 @@ pared de ladrillo, la puerta, los árboles, la pasta. Van detrás de un velo al
 94 % de opacidad, así que se leen como atmósfera y no como documento histórico.
 Tienen `alt=""` porque son decorativas: ningún texto afirma que sean de época.
 
-Cuando aparezcan fotos reales de archivo, se pisan con el mismo nombre.
+Como solo hay tres escenas disponibles para cinco hitos, hay pares que
+comparten archivo de origen, aunque con recortes de temas distintos:
+
+| Hito | Origen | Qué se ve |
+|---|---|---|
+| 1905 | `entrada_restaurante.webp` | la casa vieja, el árbol y el carro |
+| 1924 | `100años.webp` | la pared de ladrillo |
+| 1934 | `entrada_restaurante.webp` | la fachada con el cartel y el surtidor |
+| 1963 | `100años.webp` | la puerta y el salón que se ve adentro |
+| Hoy | `menu.png` | los raviolones recién cerrados |
+
+Cuando aparezcan fotos reales de archivo, se pisan con el mismo nombre y el
+problema desaparece solo.
 
 **Dónde buscarlas** (para 1905, 1924 y 1963):
 
@@ -166,7 +177,6 @@ cambiar lo que dicen. No se indica la fuente en la tarjeta; si querés que diga
 
 **El resto:**
 
-- Medios de pago (efectivo / débito / transferencia)
 - URL real de la página de Facebook
 - Dominio final: cambiar `https://silvano.com.ar/` en el `canonical`, en Open
   Graph y en el bloque `schema.org`
