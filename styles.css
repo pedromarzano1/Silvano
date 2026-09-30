@@ -270,7 +270,6 @@ p { text-wrap: pretty; }
 }
 .js-split .word__in {
   display: inline-block;
-  will-change: transform;
 }
 
 /* --- Reveal de imágenes con clip-path (lo dispara GSAP) --- */
@@ -1116,7 +1115,7 @@ body.cursor-dark .cursor__ring { border-color: rgba(158, 203, 217, .6); }
   gap: var(--sp-3);
 }
 .galeria__item {
-  will-change: transform, opacity;
+  /* sin will-change: solo se anima al filtrar, y GSAP lo pone mientras dura */
 }
 .galeria__item[hidden] { display: none; }
 
@@ -1461,6 +1460,39 @@ img.is-missing { visibility: hidden; }
 }
 .historia__bg-item.has-missing-img,
 .cta__bg.has-missing-img { background-color: var(--c-espresso-2); }
+
+/* ============================================================================
+   16c. RENDIMIENTO EN PANTALLA TÁCTIL
+   El compositor de un teléfono recalcula blur y blend en cada frame de scroll.
+   Son los dos efectos que más cuestan y los que menos se notan en pantalla
+   chica, así que ahí se apagan.
+   ========================================================================== */
+@media (pointer: coarse) {
+  .header.is-stuck {
+    background: var(--c-bone);
+    backdrop-filter: none;
+  }
+  .btn--ghost {
+    background: rgba(255, 255, 255, .12);
+    backdrop-filter: none;
+  }
+  .lightbox__backdrop {
+    background: rgba(14, 10, 9, .97);
+    backdrop-filter: none;
+  }
+  /* el grano se mantiene, pero sin mezcla de capas */
+  .grain {
+    mix-blend-mode: normal;
+    opacity: .09;
+  }
+  .menu__num {
+    mix-blend-mode: normal;
+    color: rgba(255, 255, 255, .88);
+  }
+  /* estas dos solo se animan con mouse: sin capa permanente */
+  .cta__bg { will-change: auto; }
+  .menu__media img { will-change: auto; }
+}
 
 /* ============================================================================
    17. PREFERS-REDUCED-MOTION

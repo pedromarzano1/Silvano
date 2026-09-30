@@ -37,6 +37,10 @@
   // Puntero fino = mouse/trackpad. Sirve para cursor custom y hover magnético.
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
+  // Pantalla táctil: el scroll nativo del sistema es mucho más fluido que
+  // cualquier suavizado por JS, así que ahí se aligera todo.
+  const esTactil = window.matchMedia('(pointer: coarse)').matches;
+
   /* ---------------------------------------------------------------------
      Ajustes a mano
      --------------------------------------------------------------------- */
@@ -66,6 +70,11 @@
 
   function initSmoothScroll() {
     if (reduced() || typeof window.Lenis === 'undefined') return;
+
+    // En celular no se usa Lenis: el scroll nativo está acelerado por el
+    // compositor del sistema y ningún suavizado por JS lo mejora.
+    // ScrollTrigger funciona igual sobre el scroll nativo.
+    if (esTactil) return;
 
     lenis = new Lenis({
       duration: 1.05,
@@ -654,6 +663,10 @@
     });
 
     // --- Parallax suave en fotos y fondos ---
+    // En táctil se saltea: son scrubs que corren en cada frame de scroll y es
+    // el efecto que menos aporta comparado con lo que cuesta.
+    if (esTactil) return;
+
     $$('.menu__media img').forEach((img) => {
       gsap.fromTo(img, { yPercent: -6 }, {
         yPercent: 6,
@@ -939,11 +952,27 @@
       img.addEventListener('error', flag, { once: true });
     });
 
-    // Las imágenes que cargan tarde cambian la altura: recalculamos triggers
+    // Las imágenes lazy cambian la altura de la página al cargar, pero llamar
+    // a ScrollTrigger.refresh() por cada una cuesta un recálculo completo de
+    // todos los triggers y se siente como un tirón. Se juntan en un solo
+    // refresh, y nunca mientras el usuario está scrolleando.
     if (hasGSAP) {
-      window.addEventListener('load', () => ScrollTrigger.refresh());
+      let pendiente = null;
+
+      const pedirRefresh = () => {
+        if (pendiente) clearTimeout(pendiente);
+        pendiente = window.setTimeout(() => {
+          pendiente = null;
+          const scrolleando = typeof ScrollTrigger.isScrolling === 'function' &&
+                              ScrollTrigger.isScrolling();
+          if (scrolleando) { pedirRefresh(); return; }
+          ScrollTrigger.refresh();
+        }, 250);
+      };
+
+      window.addEventListener('load', pedirRefresh);
       $$('img[loading="lazy"]').forEach((img) => {
-        img.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+        img.addEventListener('load', pedirRefresh, { once: true });
       });
     }
   }
