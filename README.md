@@ -197,6 +197,23 @@ Después: http://localhost:3000
 
 ## 5. Deploy en Vercel desde GitHub
 
+**En línea:** https://silvano-lilac.vercel.app
+
+> **Identidad de los commits.** Este repositorio se despliega en Vercel bajo la
+> cuenta `pedromarzano1`. El plan Hobby solo despliega commits cuyo autor tenga
+> acceso al proyecto, y no admite colaboradores. Por eso el repo tiene fijada
+> su propia identidad de git:
+>
+> ```
+> git config --local user.email "111799005+pedromarzano1@users.noreply.github.com"
+> ```
+>
+> Sin eso, los commits quedan atribuidos a otra cuenta de GitHub y Vercel
+> bloquea el deploy con "the commit author doesn't have permission to create
+> deployments for this project".
+
+
+
 1. **Repo**
 
    ```bash
