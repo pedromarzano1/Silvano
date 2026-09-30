@@ -641,168 +641,144 @@ body.cursor-dark .cursor__ring { border-color: rgba(158, 203, 217, .6); }
 }
 
 /* ============================================================================
-   8. HISTORIA (timeline pinneada)
+   8. HISTORIA — timeline compacta
+   Antes era una sección pinneada de 5 pantallas con crossfade de fondos.
+   Trababa el scroll y esa es la queja número uno contra el scroll-jacking:
+   el usuario siente que la página no lo deja avanzar. Ahora entra entera en
+   una pantalla y el scroll nunca se detiene.
    ========================================================================== */
 .historia {
   position: relative;
+  padding-block: var(--section-y);
   background: var(--c-espresso);
   color: var(--text-on-dark);
-}
-
-.historia__stage {
-  position: relative;
-  min-height: 100svh;
-  display: grid;
-  align-items: center;
   overflow: hidden;
+  isolation: isolate;
 }
 
-/* --- Fondos con crossfade --- */
-.historia__bg { position: absolute; inset: 0; }
-.historia__bg-item {
+.historia__bg {
   position: absolute;
   inset: 0;
-  opacity: 0;
-  transition: opacity .7s var(--ease), transform 1.4s var(--ease);
-  transform: scale(1.06);
-  will-change: opacity, transform;
+  z-index: -1;
 }
-.historia__bg-item.is-active { opacity: 1; transform: scale(1); }
-.historia__bg-item img { width: 100%; height: 100%; object-fit: cover; }
+.historia__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .historia__veil {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to right, rgba(37, 23, 19, .94) 0%, rgba(37, 23, 19, .78) 45%, rgba(20, 16, 14, .55) 100%),
+    linear-gradient(to right, rgba(37, 23, 19, .95) 0%, rgba(37, 23, 19, .86) 55%, rgba(20, 16, 14, .78) 100%),
     var(--grain);
   background-size: auto, 180px 180px;
 }
 
-.historia__inner {
-  position: relative;
-  width: 100%;
-  max-width: var(--container);
-  margin-inline: auto;
-  padding: calc(var(--header-h) + var(--sp-7)) var(--gutter) var(--sp-7);
-}
+.historia__inner { position: relative; }
 
-.historia__head { margin-bottom: var(--sp-6); }
+.historia__head { margin-bottom: var(--sp-7); }
 .historia__title {
   font-size: var(--fs-2xl);
   color: var(--c-white);
-  max-width: 24ch;
+  max-width: 20ch;
 }
 
-/* --- Slides apilados: solo el activo es visible --- */
-.historia__slides {
+/* --- La línea de tiempo --- */
+.linea {
   position: relative;
   display: grid;
-  min-height: 19rem;
-  margin-bottom: var(--sp-6);
-}
-.historia__slide {
-  grid-area: 1 / 1;
-  max-width: 34rem;
-  opacity: 0;
-  transform: translate3d(0, 28px, 0);
-  transition: opacity .5s var(--ease), transform .6s var(--ease);
-  pointer-events: none;
-  will-change: opacity, transform;
-}
-.historia__slide.is-active {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  pointer-events: auto;
-}
-.historia__year {
-  font-family: var(--font-serif);
-  font-size: var(--fs-4xl);
-  font-weight: 700;
-  line-height: .9;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(158, 203, 217, .75);
-  margin-bottom: var(--sp-3);
-}
-.historia__slide.is-active .historia__year span {
-  display: inline-block;
-  animation: yearIn .8s var(--ease) both;
-}
-@keyframes yearIn {
-  from { opacity: 0; transform: translate3d(0, .12em, 0); }
-  to   { opacity: 1; transform: none; }
-}
-.historia__slide-title {
-  font-size: var(--fs-xl);
-  color: var(--c-white);
-  margin-bottom: var(--sp-3);
-}
-.historia__text {
-  font-size: var(--fs-base);
-  color: rgba(248, 244, 238, .8);
-  font-weight: 300;
+  gap: var(--sp-6);
+  margin-bottom: var(--sp-8);
 }
 
-/* --- Línea de tiempo con progreso --- */
-.historia__timeline { position: relative; }
-.historia__markers {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--sp-2);
-  margin-bottom: var(--sp-3);
+.linea__hito {
+  position: relative;
+  padding-left: var(--sp-6);
 }
-.historia__marker {
-  font-size: var(--fs-xs);
-  font-weight: 500;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: rgba(248, 244, 238, .42);
-  transition: color var(--t-base), transform var(--t-base);
+/* riel vertical en mobile */
+.linea__hito::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1.1em;
+  bottom: calc(var(--sp-6) * -1);
+  width: 1px;
+  background: rgba(255, 255, 255, .18);
 }
-.historia__marker.is-active {
+.linea__hito:last-child::after { display: none; }
+
+.linea__hito::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .55em;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--c-red);
+  box-shadow: 0 0 0 3px var(--c-espresso);
+}
+
+.linea__anio {
+  font-family: var(--font-serif);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  line-height: 1;
   color: var(--c-sky);
-  transform: translateY(-2px);
+  margin-bottom: var(--sp-2);
 }
-.historia__progress {
-  height: 2px;
-  background: rgba(248, 244, 238, .18);
-  border-radius: var(--r-pill);
-  overflow: hidden;
+.linea__titulo {
+  font-family: var(--font-serif);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--c-white);
+  margin-bottom: var(--sp-2);
 }
-.historia__progress-bar {
-  display: block;
-  height: 100%;
-  background: linear-gradient(to right, var(--c-sky), var(--c-red-cta));
-  transform: scaleX(0);
-  transform-origin: left center;
-  will-change: transform;
+.linea__texto {
+  font-size: var(--fs-sm);
+  font-weight: 300;
+  color: rgba(248, 244, 238, .78);
 }
 
 /* --- Cierre --- */
-.historia__closing {
-  position: relative;
-  padding: var(--section-y) var(--gutter);
-  text-align: center;
-  background: var(--c-espresso-2);
-}
 .historia__closing-text {
   font-family: var(--font-serif);
   font-size: var(--fs-2xl);
   font-style: italic;
   color: var(--c-white);
-  max-width: 28ch;
-  margin-inline: auto;
+  max-width: 24ch;
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--line-light);
 }
 
 @media (min-width: 900px) {
-  .historia__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, .85fr);
-    align-items: center;
-    gap: var(--sp-8);
+  .linea {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--sp-5);
+    padding-top: var(--sp-5);
   }
-  .historia__head { grid-column: 1 / -1; margin-bottom: 0; }
-  .historia__slides { margin-bottom: 0; min-height: 22rem; }
-  .historia__timeline { grid-column: 1 / -1; margin-top: var(--sp-7); }
+  /* el riel pasa a ser horizontal y único */
+  .linea::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, .18);
+  }
+  .linea__hito {
+    padding-left: 0;
+    padding-top: var(--sp-5);
+  }
+  .linea__hito::after { display: none; }
+  .linea__hito::before { top: 0; left: 0; }
+
+  .historia__closing-text {
+    font-size: var(--fs-3xl);
+    max-width: 28ch;
+  }
 }
 
 /* ============================================================================
@@ -1461,7 +1437,7 @@ img.is-missing { visibility: hidden; }
   );
   background-size: 180px 180px, auto;
 }
-.historia__bg-item.has-missing-img,
+.historia__bg.has-missing-img,
 .cta__bg.has-missing-img { background-color: var(--c-espresso-2); }
 
 /* ============================================================================
@@ -1646,18 +1622,8 @@ img.is-missing { visibility: hidden; }
     background-position: center;
   }
 
-  /* Historia: los cinco hitos visibles en una lista, sin pin */
-  .historia__stage { min-height: 0; display: block; }
-  .historia__bg-item { display: none; }
-  .historia__bg-item.is-active { display: block; opacity: 1; transform: none; }
-  .historia__slides { display: grid; gap: var(--sp-7); min-height: 0; }
-  .historia__slide {
-    grid-area: auto;
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-  }
-  .historia__timeline { display: none; }
+  /* Historia ya no tiene pin: la sección es estática por diseño y no hace
+     falta desarmar nada acá. */
 
   /* Menú: grilla vertical en lugar de scroll horizontal */
   .menu__pin { min-height: 0; display: block; }

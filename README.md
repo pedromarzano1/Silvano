@@ -80,7 +80,19 @@ Dos advertencias si tocás la paleta:
 Todos se recortaron sacando la interfaz de Instagram (barra de estado, botón
 Seguir, el texto de la story y el marco rojo).
 
-### Los cuatro fondos de la timeline son texturas, no fotos de archivo
+### La timeline es compacta, sin pin
+
+La sección de historia estuvo pinneada: quedaba fija y había que scrollear
+5 pantallas (luego 3) para pasar los cinco hitos antes de poder seguir bajando.
+Eso es scroll-jacking y es la queja más común contra este patrón: el usuario
+siente que la página no lo deja avanzar.
+
+Ahora los cinco hitos entran juntos en una pantalla, sobre una sola imagen de
+fondo, y el scroll nunca se detiene. Se eliminaron el pin, el crossfade de
+cinco fondos, la barra de progreso y los marcadores de año: menos código,
+menos ScrollTriggers y mejor rendimiento en celular.
+
+### El fondo de la timeline es una foto actual, no de archivo
 
 Cuatro hitos (1905, 1924, 1963 y hoy) no tienen foto de época. En vez de dejar
 bloques de color, se usan recortes de **fotos actuales del propio local**: la
@@ -88,19 +100,12 @@ pared de ladrillo, la puerta, los árboles, la pasta. Van detrás de un velo al
 94 % de opacidad, así que se leen como atmósfera y no como documento histórico.
 Tienen `alt=""` porque son decorativas: ningún texto afirma que sean de época.
 
-Como solo hay tres escenas disponibles para cinco hitos, hay pares que
-comparten archivo de origen, aunque con recortes de temas distintos:
+`historia-fondo.jpg` es la fachada actual, muy oscurecida por un velo: funciona
+como atmósfera, no como documento. Lleva `alt=""` y ningún texto afirma que sea
+de época.
 
-| Hito | Origen | Qué se ve |
-|---|---|---|
-| 1905 | `fuentes/fachada.webp` | la casa vieja, el árbol y el carro |
-| 1924 | `fuentes/cien-anios.webp` | la pared de ladrillo |
-| 1934 | `fuentes/fachada.webp` | la fachada con el cartel y el surtidor |
-| 1963 | `fuentes/cien-anios.webp` | la puerta y el salón que se ve adentro |
-| Hoy | `fuentes/menu.png` | los raviolones recién cerrados |
-
-Cuando aparezcan fotos reales de archivo, se pisan con el mismo nombre y el
-problema desaparece solo.
+Al pasar a una sola imagen se eliminaron los otros cuatro fondos, que eran
+recortes repetidos de las mismas tres escenas y se notaban como tales.
 
 **Dónde buscarlas** (para 1905, 1924 y 1963):
 

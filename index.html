@@ -380,99 +380,48 @@
     <!-- =========================================================== -->
     <!-- 5. HISTORIA — timeline pinneada                             -->
     <!-- =========================================================== -->
-    <section class="historia" id="historia" aria-labelledby="historia-title" data-historia>
-      <div class="historia__stage" data-historia-stage>
-
-        <!-- Fondos con crossfade: uno por hito -->
-        <div class="historia__bg" aria-hidden="true">
-          <!-- FOTO DE ARCHIVO PENDIENTE: el campo o la hacienda del Dr. Tomás Jofré.
-               Por ahora: los árboles y el cielo de la foto de la entrada.
-               Es textura, no documento: va detrás de un velo al 94%. -->
-          <figure class="historia__bg-item is-active" data-bg="0">
-            <img src="assets/img/historia-1905.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
-          </figure>
-          <!-- FOTO DE ARCHIVO PENDIENTE: el almacén de ramos generales.
-               Por ahora: la pared de ladrillo del propio local.
-               Es textura, no documento: va detrás de un velo al 94%. -->
-          <figure class="historia__bg-item" data-bg="1">
-            <img src="assets/img/historia-1924.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
-          </figure>
-          <!-- Foto real: la fachada con el surtidor YPF (fuentes/fachada.webp) -->
-          <figure class="historia__bg-item" data-bg="2">
-            <img src="assets/img/historia-1934.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
-          </figure>
-          <!-- FOTO DE ARCHIVO PENDIENTE: el mostrador con fiambres y pastas.
-               Por ahora: la puerta y el salón que se ve adentro.
-               Es textura, no documento: va detrás de un velo al 94%. -->
-          <figure class="historia__bg-item" data-bg="3">
-            <img src="assets/img/historia-1963.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
-          </figure>
-          <!-- FOTO PENDIENTE: Gerardo amasando.
-               Por ahora: los raviolones recién cerrados sobre la mesada.
-               Es textura, no documento: va detrás de un velo al 94%. -->
-          <figure class="historia__bg-item" data-bg="4">
-            <img src="assets/img/historia-hoy.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
-          </figure>
-          <div class="historia__veil"></div>
-        </div>
-
-        <div class="historia__inner">
-          <header class="historia__head">
-            <p class="eyebrow eyebrow--light">Nuestra historia</p>
-            <h2 class="historia__title" id="historia-title">Cien años en la misma esquina</h2>
-          </header>
-
-          <!-- Hitos: se muestran de a uno a medida que avanza el scroll -->
-          <div class="historia__slides">
-            <article class="historia__slide is-active" data-slide="0">
-              <p class="historia__year"><span>1905</span></p>
-              <h3 class="historia__slide-title">El abuelo llega de Italia</h3>
-              <p class="historia__text">Cruza el Atlántico y empieza a trabajar en la hacienda del Dr. Tomás Jofré, el pueblo que después le daría nombre a todo esto.</p>
-            </article>
-
-            <article class="historia__slide" data-slide="1">
-              <p class="historia__year"><span>1924</span></p>
-              <h3 class="historia__slide-title">1 de agosto: abre el almacén</h3>
-              <p class="historia__text">Domingo Pedro Silvano abre el almacén de ramos generales. Enriqueta Gatti, la cocinera, crea la receta de los raviolones que todavía seguimos haciendo igual.</p>
-            </article>
-
-            <article class="historia__slide" data-slide="2">
-              <p class="historia__year"><span>1934</span></p>
-              <h3 class="historia__slide-title">Llega el surtidor YPF</h3>
-              <p class="historia__text">Se instala el surtidor en la puerta. Todavía está ahí, en la entrada, igual que el primer día.</p>
-            </article>
-
-            <article class="historia__slide" data-slide="3">
-              <p class="historia__year"><span>1963</span></p>
-              <h3 class="historia__slide-title">Nace el restaurante</h3>
-              <p class="historia__text">Deja de pasar el tren y el almacén se reinventa: empiezan a servir fiambres y pastas sobre el mostrador. Así nace el restaurante.</p>
-            </article>
-
-            <article class="historia__slide" data-slide="4">
-              <p class="historia__year"><span>Hoy</span></p>
-              <h3 class="historia__slide-title">La cuarta generación</h3>
-              <p class="historia__text">Gerardo amasa cada mañana con la receta original. Y &ldquo;Minino&rdquo; recibe, uno por uno, a cada comensal que cruza la puerta.</p>
-            </article>
-          </div>
-
-          <!-- Línea de progreso + marcadores de año -->
-          <div class="historia__timeline">
-            <ol class="historia__markers">
-              <li class="historia__marker is-active" data-marker="0"><span>1905</span></li>
-              <li class="historia__marker" data-marker="1"><span>1924</span></li>
-              <li class="historia__marker" data-marker="2"><span>1934</span></li>
-              <li class="historia__marker" data-marker="3"><span>1963</span></li>
-              <li class="historia__marker" data-marker="4"><span>Hoy</span></li>
-            </ol>
-            <div class="historia__progress">
-              <span class="historia__progress-bar" data-historia-progress></span>
-            </div>
-          </div>
-        </div>
+    <section class="historia" id="historia" aria-labelledby="historia-title">
+      <!-- Una sola imagen de fondo: la fachada. Antes eran cinco con crossfade,
+           dentro de una sección pinneada que trababa el scroll 3 pantallas. -->
+      <div class="historia__bg" aria-hidden="true">
+        <img src="assets/img/historia-fondo.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
+        <div class="historia__veil"></div>
       </div>
 
-      <!-- Cierre de la sección -->
-      <div class="historia__closing">
+      <div class="historia__inner container">
+        <header class="historia__head">
+          <p class="eyebrow eyebrow--light">Nuestra historia</p>
+          <h2 class="historia__title" id="historia-title">Cien años en la misma esquina</h2>
+        </header>
+
+        <ol class="linea" data-linea>
+          <li class="linea__hito">
+            <p class="linea__anio">1905</p>
+            <h3 class="linea__titulo">El abuelo llega de Italia</h3>
+            <p class="linea__texto">Cruza el Atlántico y entra a trabajar en la hacienda del Dr. Tomás Jofré.</p>
+          </li>
+          <li class="linea__hito">
+            <p class="linea__anio">1924</p>
+            <h3 class="linea__titulo">Abre el almacén</h3>
+            <p class="linea__texto">El 1 de agosto, Domingo Pedro Silvano abre el ramos generales. Enriqueta Gatti crea la receta de los raviolones.</p>
+          </li>
+          <li class="linea__hito">
+            <p class="linea__anio">1934</p>
+            <h3 class="linea__titulo">Llega el surtidor YPF</h3>
+            <p class="linea__texto">Se instala en la puerta. Todavía está ahí, igual que el primer día.</p>
+          </li>
+          <li class="linea__hito">
+            <p class="linea__anio">1963</p>
+            <h3 class="linea__titulo">Nace el restaurante</h3>
+            <p class="linea__texto">Deja de pasar el tren y el mostrador empieza a servir fiambres y pastas.</p>
+          </li>
+          <li class="linea__hito">
+            <p class="linea__anio">Hoy</p>
+            <h3 class="linea__titulo">La cuarta generación</h3>
+            <p class="linea__texto">Gerardo amasa con la receta original. Y &ldquo;Minino&rdquo; recibe a cada comensal.</p>
+          </li>
+        </ol>
+
         <p class="historia__closing-text js-split">El primer restaurante de Tomás Jofré.</p>
       </div>
     </section>

@@ -49,9 +49,6 @@
   // Poner en true para recuperarlo; el markup y el CSS siguen en su lugar.
   const CURSOR_CUSTOM = false;
 
-  // Cuanto scroll dura cada hito de la timeline, en alturas de pantalla.
-  // 1 = una pantalla entera por hito (se siente trabado). Subir o bajar a gusto.
-  const HISTORIA_PASO = { desktop: 0.6, mobile: 0.45 };
 
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
   const nf = new Intl.NumberFormat('es-AR');
@@ -416,63 +413,30 @@
   }
 
   /* ==========================================================================
-     6. HISTORIA — timeline pinneada
-     Un solo ScrollTrigger: pin + progreso. El onUpdate mapea el progreso
-     a un índice de hito y cambia clases (el crossfade lo hace el CSS).
+     6. HISTORIA — timeline compacta
+     Ya no hay pin. La sección entra en una pantalla y el scroll nunca se
+     detiene: pinnear 5 pantallas era la queja principal contra esta sección.
+     Solo queda una entrada escalonada de los hitos al aparecer.
      ====================================================================== */
   function initHistoria() {
-    const section = $('[data-historia]');
-    const stage = $('[data-historia-stage]');
-    if (!section || !stage) return;
+    const linea = $('[data-linea]');
+    const closing = $('.historia__closing-text');
 
-    const slides = $$('.historia__slide', section);
-    const bgs = $$('.historia__bg-item', section);
-    const markers = $$('.historia__marker', section);
-    const bar = $('[data-historia-progress]');
-    const total = slides.length;
-    if (!total) return;
+    if (!hasGSAP || reduced()) return;   // sin JS la sección ya se lee entera
 
-    if (!hasGSAP || reduced()) {
-      // Estático: todos los hitos visibles, sin pin ni crossfade
-      slides.forEach((s) => s.classList.add('is-active'));
-      if (bar) bar.style.transform = 'scaleX(1)';
-      return;
+    if (linea) {
+      const hitos = $$('.linea__hito', linea);
+      gsap.from(hitos, {
+        opacity: 0,
+        y: 22,
+        duration: 0.7,
+        ease: 'power3.out',
+        stagger: 0.1,
+        scrollTrigger: { trigger: linea, start: 'top 85%', once: true }
+      });
     }
 
-    let current = -1;
-    const setStep = (i) => {
-      if (i === current) return;
-      current = i;
-      slides.forEach((el, idx) => el.classList.toggle('is-active', idx === i));
-      bgs.forEach((el, idx) => el.classList.toggle('is-active', idx === i));
-      markers.forEach((el, idx) => el.classList.toggle('is-active', idx === i));
-    };
-    setStep(0);
-
-    const setBar = bar ? gsap.quickSetter(bar, 'scaleX') : null;
-
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      // El pin dura lo que dura leer los hitos, no una pantalla entera por hito:
-      // con una pantalla cada uno la seccion se siente trabada.
-      end: () => {
-        const paso = window.innerWidth >= 900 ? HISTORIA_PASO.desktop : HISTORIA_PASO.mobile;
-        return '+=' + window.innerHeight * total * paso;
-      },
-      pin: stage,
-      pinSpacing: true,
-      anticipatePin: 1,
-      invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        const p = self.progress;
-        if (setBar) setBar(p);
-        setStep(clamp(Math.floor(p * total), 0, total - 1));
-      }
-    });
-
-    // Cierre: la frase entra palabra por palabra
-    const closing = $('.historia__closing-text');
+    // El cierre entra palabra por palabra
     if (closing) {
       const words = splitWords(closing);
       gsap.set(words, { yPercent: 115 });
@@ -481,7 +445,7 @@
         duration: 0.9,
         ease: 'power3.out',
         stagger: 0.05,
-        scrollTrigger: { trigger: closing, start: 'top 82%', once: true }
+        scrollTrigger: { trigger: closing, start: 'top 88%', once: true }
       });
     }
   }
@@ -946,7 +910,7 @@
     $$('img').forEach((img) => {
       const flag = () => {
         img.classList.add('is-missing');
-        const holder = img.closest('.menu__media, .galeria__btn, .historia__bg-item, .cta__bg');
+        const holder = img.closest('.menu__media, .galeria__btn, .historia__bg, .cta__bg');
         if (holder) holder.classList.add('has-missing-img');
       };
       if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) flag();
