@@ -127,17 +127,22 @@ sin tocar código. Exportar a ~80 % de calidad, apuntando a menos de 300 KB.
 
 ### Video del hero
 
-`assets/video/hero-silvano.mp4` — H.264, **1280×720 horizontal**, 10 s, 3,3 MB,
-con `faststart` (arranca sin esperar la descarga completa).
+`assets/video/hero-silvano.mp4` — H.264, **1280×720 horizontal**, 10 s, 3,2 MB,
+con `faststart` (arranca sin esperar la descarga completa). Sin texto
+sobreimpreso, para no competir con el título del hero.
+
+Conserva una pista de audio de **157 KB (4,9 % del archivo)**. El `<video>` va
+muteado, así que nunca suena: es solo peso de más. No se quitó a mano porque
+reescribir el contenedor MP4 sin herramientas es más riesgoso que el ahorro.
 
 Reemplaza a una versión anterior vertical de 384×848, que en desktop se
 agrandaba 6,4× y mostraba solo el 22 % del cuadro.
 
-Dos cosas opcionales, si alguna vez querés afinarlo. Hacen falta `ffmpeg`:
+Para quitarla bien, con `ffmpeg` (`winget install Gyan.FFmpeg` en Windows):
 
 ```bash
-# Sacar la pista de audio: el hero va muteado, son ~200 KB de más.
-ffmpeg -i hero-silvano.mp4 -an -c:v copy hero-silvano-sinaudio.mp4
+# Saca el audio sin tocar el video: es copia directa, no recomprime.
+ffmpeg -i hero-silvano.mp4 -an -c:v copy -movflags +faststart hero-sin-audio.mp4
 
 # Generar el webm, que pesa ~30 % menos en navegadores que lo soportan.
 ffmpeg -i hero-silvano.mp4 -an -c:v libvpx-vp9 -crf 34 -b:v 0 hero-silvano.webm
