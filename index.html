@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F7F3EE">
+
+  <!-- ============================ SEO ============================ -->
+  <title>Silvano | Restaurante de campo en Tomás Jofré desde 1924</title>
+  <meta name="description" content="El primer restaurante de Tomás Jofré. Cuatro generaciones amasando los raviolones de la receta original de 1924. Entrada, pastas y bebida libres. Reservá por WhatsApp.">
+  <meta name="author" content="Restaurante Silvano">
+  <meta name="robots" content="index, follow">
+  <!-- REEMPLAZAR: dominio final del sitio en canonical y en todas las URLs absolutas -->
+  <link rel="canonical" href="https://silvano.com.ar/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="restaurant">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Silvano">
+  <meta property="og:title" content="Silvano | Restaurante de campo en Tomás Jofré desde 1924">
+  <meta property="og:description" content="Cuatro generaciones amasando la misma receta. 1.800 raviolones por día, uno por uno. Reservá por WhatsApp.">
+  <meta property="og:url" content="https://silvano.com.ar/">
+  <!-- REEMPLAZAR: og-image.jpg (1200x630) -->
+  <meta property="og:image" content="https://silvano.com.ar/assets/img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Raviolones caseros de Silvano servidos en la mesa">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Silvano | Restaurante de campo en Tomás Jofré desde 1924">
+  <meta name="twitter:description" content="Cuatro generaciones amasando la misma receta. Reservá por WhatsApp.">
+  <meta name="twitter:image" content="https://silvano.com.ar/assets/img/og-image.jpg">
+
+  <!-- Generados a partir del logo real (recorte circular de la foto de perfil) -->
+  <link rel="icon" href="assets/img/favicon-64.png" type="image/png" sizes="64x64">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+  <!-- ======================= Tipografías ========================= -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&amp;family=Inter:wght@300;400;500;600&amp;display=swap">
+
+  <!-- ========================== Estilos ========================== -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Precarga del poster del hero: primer pixel que ve el usuario -->
+  <link rel="preload" as="image" href="assets/img/hero-poster.jpg" fetchpriority="high">
+
+  <!-- ===================== schema.org Restaurant ================== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "@id": "https://silvano.com.ar/#restaurant",
+    "name": "Silvano",
+    "alternateName": "Restaurante Silvano - Tomás Jofré",
+    "description": "El primer restaurante de Tomás Jofré. Desde 1924, cuatro generaciones amasando a mano los raviolones de la receta original.",
+    "url": "https://silvano.com.ar/",
+    "telephone": "+5492324453130",
+    "image": ["https://silvano.com.ar/assets/img/og-image.jpg"],
+    "servesCuisine": ["Italiana", "Argentina", "Pastas caseras"],
+    "priceRange": "$$",
+    "currenciesAccepted": "ARS",
+    "foundingDate": "1924-08-01",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Calle 810 y 807",
+      "addressLocality": "Tomás Jofré",
+      "addressRegion": "Buenos Aires",
+      "postalCode": "6600",
+      "addressCountry": "AR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -34.6319,
+      "longitude": -59.3236
+    },
+    "hasMap": "https://www.google.com/maps?q=Restaurante+Silvano+Tom%C3%A1s+Jofr%C3%A9",
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Friday", "Saturday"], "opens": "12:00", "closes": "16:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Friday", "Saturday"], "opens": "20:30", "closes": "23:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Sunday", "PublicHolidays"], "opens": "12:00", "closes": "18:00" }
+    ],
+    "acceptsReservations": "https://wa.me/5492324453130",
+    "publicAccess": true,
+    "amenityFeature": [
+      { "@type": "LocationFeatureSpecification", "name": "Jardín al aire libre", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Acceso para personas con discapacidad", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Estacionamiento", "value": true }
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "bestRating": "5",
+      "reviewCount": "2000"
+    },
+    "sameAs": [
+      "https://www.instagram.com/silvano_tomasjofre/",
+      "https://www.facebook.com/"
+    ]
+  }
+  </script>
+</head>
+
+<body id="top">
+  <!-- Saltar al contenido: primer tab stop, requisito de accesibilidad -->
+  <a class="skip-link" href="#main">Saltar al contenido principal</a>
+
+  <!-- Cursor custom (solo desktop con puntero fino; lo activa main.js) -->
+  <div class="cursor" aria-hidden="true">
+    <span class="cursor__dot"></span>
+    <span class="cursor__ring"></span>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- 1. HEADER                                                     -->
+  <!-- ============================================================= -->
+  <header class="header" data-header>
+    <div class="header__inner">
+      <a class="logo" href="#top" aria-label="Silvano, desde 1924. Ir al inicio">
+        <img class="logo__mark" src="assets/img/logo-silvano.png"
+             alt="" width="256" height="256" fetchpriority="high" decoding="async">
+        <span class="logo__name">Silvano</span>
+        <span class="logo__sep" aria-hidden="true">·</span>
+        <span class="logo__since">Desde 1924</span>
+      </a>
+
+      <nav class="nav" id="nav" aria-label="Navegación principal">
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#menu">Menú</a></li>
+          <li><a class="nav__link" href="#historia">Historia</a></li>
+          <li><a class="nav__link" href="#galeria">Galería</a></li>
+          <li><a class="nav__link" href="#llegar">Cómo llegar</a></li>
+        </ul>
+        <a class="btn btn--primary btn--sm nav__cta"
+           href="https://wa.me/5492324453130?text=Hola!%20Quiero%20reservar%20para%20___%20personas%20el%20d%C3%ADa%20___"
+           target="_blank" rel="noopener">Reservar</a>
+      </nav>
+
+      <a class="btn btn--primary btn--sm header__cta" data-magnetic
+         href="https://wa.me/5492324453130?text=Hola!%20Quiero%20reservar%20para%20___%20personas%20el%20d%C3%ADa%20___"
+         target="_blank" rel="noopener">Reservar</a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Abrir menú de navegación">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- =========================================================== -->
+    <!-- 2. HERO CINEMATOGRÁFICO                                     -->
+    <!-- =========================================================== -->
+    <section class="hero" id="hero" aria-labelledby="hero-title">
+      <!-- Capa de video: zoom-out + parallax con scrub -->
+      <div class="hero__media" data-hero-media>
+        <!--
+          VIDEO DEL HERO. Dejar el archivo en:
+            assets/video/video-silvano.mp4   (H.264, yuv420p, < 3 MB)
+            assets/video/video-silvano.webm  (VP9, opcional: pesa menos)
+          OJO: va dentro de assets/video/, no en la raíz del proyecto.
+          Si solo hay .mp4, alcanza: el navegador ignora el source que falta.
+          Mientras no esté, se ve assets/img/hero-poster.jpg y el zoom-out
+          con scroll funciona igual.
+          Duración ideal: 8 a 12 s en loop, sin audio.
+        -->
+        <video class="hero__video" data-hero-video
+               poster="assets/img/hero-poster.jpg"
+               muted loop playsinline preload="none"
+               aria-hidden="true" tabindex="-1">
+          <source src="assets/video/video-silvano.webm" type="video/webm">
+          <source src="assets/video/video-silvano.mp4" type="video/mp4">
+        </video>
+        <div class="hero__overlay" aria-hidden="true"></div>
+        <div class="grain" aria-hidden="true"></div>
+      </div>
+
+      <div class="hero__content">
+        <p class="stamp" data-hero-fade>
+          <span class="stamp__line">Tomás Jofré</span>
+          <span class="stamp__big">Desde 1924</span>
+          <span class="stamp__line">Ramos generales</span>
+        </p>
+
+        <h1 class="hero__title js-split" id="hero-title">Desde 1924, los raviolones de Tomás Jofré</h1>
+
+        <p class="hero__subtitle" data-hero-fade>Cuatro generaciones amasando la misma receta.</p>
+
+        <div class="hero__actions" data-hero-fade>
+          <a class="btn btn--primary btn--lg" data-magnetic
+             href="https://wa.me/5492324453130?text=Hola!%20Quiero%20reservar%20para%20___%20personas%20el%20d%C3%ADa%20___"
+             target="_blank" rel="noopener">
+            <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.97L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.06c-.24.68-1.4 1.31-1.94 1.36-.54.05-1.04.24-3.5-.73-2.96-1.17-4.83-4.23-4.98-4.43-.15-.2-1.19-1.59-1.19-3.03 0-1.44.75-2.15 1.02-2.45.27-.29.59-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.83 2.02.9 2.17.07.15.12.32.02.51-.1.2-.15.32-.29.49-.15.17-.31.39-.45.52-.15.15-.3.31-.13.6.17.29.76 1.26 1.63 2.04 1.12 1 2.06 1.31 2.35 1.46.29.15.46.12.63-.07.17-.2.73-.85.93-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.12.07.71-.17 1.39Z"/>
+            </svg>
+            Reservar por WhatsApp
+          </a>
+          <a class="btn btn--ghost btn--lg" data-magnetic href="#historia">Conocé nuestra historia</a>
+        </div>
+      </div>
+
+      <div class="hero__scroll" data-hero-fade aria-hidden="true">
+        <span class="hero__scroll-label">Scrolleá</span>
+        <span class="hero__scroll-line"></span>
+      </div>
+    </section>
+
+    <!-- =========================================================== -->
+    <!-- 3. MENÚ — scroll horizontal pinneado (carrusel en mobile)   -->
+    <!-- =========================================================== -->
+    <section class="menu" id="menu" aria-labelledby="menu-title" data-menu>
+      <div class="menu__pin" data-menu-pin>
+        <header class="menu__head container">
+          <p class="eyebrow">Menú libre</p>
+          <h2 class="menu__title js-split" id="menu-title">Cuatro pasos, uno detrás del otro</h2>
+        </header>
+
+        <div class="menu__viewport" data-menu-viewport role="group" tabindex="0" aria-label="Pasos del menú: usá las flechas o deslizá">
+          <ol class="menu__track" data-menu-track>
+
+            <li class="menu__card">
+              <div class="menu__media">
+                <!-- REEMPLAZAR: menu-01-entrada.jpg (1200x1500) -->
+                <img src="assets/img/menu-01-entrada.jpg"
+                     alt="Fuente con salame, jamón crudo y bastones de queso, con pan casero al lado"
+                     loading="lazy" decoding="async" width="1200" height="1500">
+                <span class="menu__num" aria-hidden="true">01</span>
+              </div>
+              <div class="menu__body">
+                <p class="menu__step">01 &middot; Entrada</p>
+                <h3 class="menu__card-title">Picada de campo</h3>
+                <p class="menu__desc">Salame, jamón crudo, queso y galleta.</p>
+              </div>
+            </li>
+
+            <li class="menu__card">
+              <div class="menu__media">
+                <!-- REEMPLAZAR: menu-02-pastas.jpg (1200x1500) -->
+                <img src="assets/img/menu-02-pastas.jpg"
+                     alt="Raviolones con estofado de pollo y abundante queso rallado, en cazuela de barro"
+                     loading="lazy" decoding="async" width="1200" height="1500">
+                <span class="menu__num" aria-hidden="true">02</span>
+              </div>
+              <div class="menu__body">
+                <p class="menu__step">02 &middot; Pastas</p>
+                <h3 class="menu__card-title">Raviolones o tallarines</h3>
+                <p class="menu__desc">Raviolones de verdura y carne, o tallarines caseros. Con estofado de pollo, oliva o manteca.</p>
+                <!-- A CONFIRMAR: la opción vegetariana no figura en el menú que publicaron en Instagram -->
+                <p class="menu__note">Opción vegetariana: raviolones de ricota y nuez.</p>
+              </div>
+            </li>
+
+            <li class="menu__card">
+              <div class="menu__media">
+                <!-- REEMPLAZAR: menu-03-postre.jpg (1200x1500) -->
+                <img src="assets/img/menu-03-postre.jpg"
+                     alt="Zabaglione servido en copa, espolvoreado con cacao y con una vainilla"
+                     loading="lazy" decoding="async" width="1200" height="1500">
+                <span class="menu__num" aria-hidden="true">03</span>
+              </div>
+              <div class="menu__body">
+                <p class="menu__step">03 &middot; Postre</p>
+                <h3 class="menu__card-title">De los de antes</h3>
+                <p class="menu__desc">Flan casero, helados y frutas en almíbar.</p>
+                <p class="menu__note">En la foto: zabaglione, el sambayón de la casa.</p>
+              </div>
+            </li>
+
+            <li class="menu__card">
+              <div class="menu__media">
+                <!-- REEMPLAZAR: menu-04-bebida.jpg (1200x1500) -->
+                <img src="assets/img/menu-04-bebida.jpg"
+                     alt="Botellas de gaseosa y de agua mineral sobre la mesa de madera, con un vaso con hielo y limón y un destapador antiguo"
+                     loading="lazy" decoding="async" width="900" height="1125">
+                <span class="menu__num" aria-hidden="true">04</span>
+              </div>
+              <div class="menu__body">
+                <p class="menu__step">04 &middot; Bebidas</p>
+                <h3 class="menu__card-title">De la casa</h3>
+                <p class="menu__desc">Gaseosas, vino de la casa, soda y agua.</p>
+              </div>
+            </li>
+
+          </ol>
+        </div>
+
+        <!-- Indicador de swipe, solo mobile -->
+        <p class="menu__swipe" aria-hidden="true">Deslizá para ver los cuatro pasos &rarr;</p>
+      </div>
+
+      <!-- Nota y precio -->
+      <div class="menu__foot container">
+        <div class="menu__foot-box">
+          <p class="menu__foot-note">Entrada, pastas y bebida libres. Un postre por persona.</p>
+          <p class="menu__price">
+            <span class="menu__price-label">Precio por persona</span>
+            <span class="menu__price-value">$40.000 &ndash; $50.000</span>
+          </p>
+          <a class="btn btn--primary" data-magnetic
+             href="https://wa.me/5492324453130?text=Hola!%20Quiero%20reservar%20para%20___%20personas%20el%20d%C3%ADa%20___"
+             target="_blank" rel="noopener">Reservar una mesa</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================== -->
+    <!-- 4. RESEÑAS                                                  -->
+    <!-- =========================================================== -->
+    <section class="resenas" aria-labelledby="resenas-title">
+      <div class="container">
+        <header class="resenas__head">
+          <p class="eyebrow">Lo que dicen</p>
+          <h2 class="resenas__title js-split" id="resenas-title">Los mejores ravioles del mundo</h2>
+          <p class="resenas__source">Según <em>La Nación</em> y <em>Revista Lugares</em>.</p>
+        </header>
+
+        <ul class="resenas__stats">
+          <li class="resenas__stat">
+            <span class="resenas__stat-num">4,8</span>
+            <span class="resenas__stat-label">
+              <span class="resenas__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+              en Restaurant Guru
+            </span>
+          </li>
+          <li class="resenas__stat">
+            <span class="resenas__stat-num">+2.000</span>
+            <span class="resenas__stat-label">opiniones de comensales</span>
+          </li>
+          <li class="resenas__stat">
+            <span class="resenas__stat-num">100</span>
+            <span class="resenas__stat-label">años en el mismo lugar</span>
+          </li>
+        </ul>
+
+        <!-- Slider de testimonios -->
+        <div class="slider" data-slider role="group" aria-roledescription="carrusel" aria-label="Testimonios de comensales">
+          <div class="slider__viewport">
+            <ul class="slider__track" data-slider-track>
+              <!-- Reseñas reales de Google. Se publica solo el nombre de pila.
+                   Texto abreviado y con la puntuación ordenada; sin cambiar lo que dicen. -->
+              <li class="slider__slide" role="group" aria-roledescription="testimonio" aria-label="1 de 4">
+                <blockquote class="quote">
+                  <p class="quote__text">&ldquo;Excelente TODO. Segunda vez que voy cuando estoy paseando por Buenos Aires, y la verdad, son deliciosas sus pastas, la atención, la amabilidad. No pueden no ir a Silvano todo el que ande por Buenos Aires.&rdquo;</p>
+                  <footer class="quote__author">Erica</footer>
+                </blockquote>
+              </li>
+              <li class="slider__slide" role="group" aria-roledescription="testimonio" aria-label="2 de 4">
+                <blockquote class="quote">
+                  <p class="quote__text">&ldquo;Ideal para quienes buscan una comida reconfortante, con sabor a hogar, y sentirse en el comedor de una gran casa. Es ideal para compartir, porque son porciones abundantes. Hacete lugar para los postres: son riquísimos.&rdquo;</p>
+                  <footer class="quote__author">Luna</footer>
+                </blockquote>
+              </li>
+              <li class="slider__slide" role="group" aria-roledescription="testimonio" aria-label="3 de 4">
+                <blockquote class="quote">
+                  <p class="quote__text">&ldquo;Los raviolones de verdura y carne, sublimes con estofado de pollo. Ni hablar de la tabla de crudo, salame y queso. Para terminar, un monumental flan casero mixto. La atención, impecable. Volvería sin duda.&rdquo;</p>
+                  <footer class="quote__author">Volare</footer>
+                </blockquote>
+              </li>
+              <li class="slider__slide" role="group" aria-roledescription="testimonio" aria-label="4 de 4">
+                <blockquote class="quote">
+                  <p class="quote__text">&ldquo;Un clásico de Buenos Aires. Lo visito desde hace 30 años y siempre igual de rico: mismo menú, misma calidad. Si van por primera vez a Tomás Jofré, arranquen por acá. Este es el clásico original.&rdquo;</p>
+                  <footer class="quote__author">Matías</footer>
+                </blockquote>
+              </li>
+            </ul>
+          </div>
+
+          <div class="slider__controls">
+            <button class="slider__arrow" type="button" data-slider-prev aria-label="Testimonio anterior">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="slider__dots" data-slider-dots></div>
+            <button class="slider__arrow" type="button" data-slider-next aria-label="Testimonio siguiente">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================== -->
+    <!-- 5. HISTORIA — timeline pinneada                             -->
+    <!-- =========================================================== -->
+    <section class="historia" id="historia" aria-labelledby="historia-title" data-historia>
+      <div class="historia__stage" data-historia-stage>
+
+        <!-- Fondos con crossfade: uno por hito -->
+        <div class="historia__bg" aria-hidden="true">
+          <!-- FOTO DE ARCHIVO PENDIENTE: el campo o la hacienda del Dr. Tomás Jofré.
+               Por ahora: los árboles y el cielo de la foto de la entrada.
+               Es textura, no documento: va detrás de un velo al 94%. -->
+          <figure class="historia__bg-item is-active" data-bg="0">
+            <img src="assets/img/historia-1905.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
+          </figure>
+          <!-- FOTO DE ARCHIVO PENDIENTE: el almacén de ramos generales.
+               Por ahora: la pared de ladrillo del propio local.
+               Es textura, no documento: va detrás de un velo al 94%. -->
+          <figure class="historia__bg-item" data-bg="1">
+            <img src="assets/img/historia-1924.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
+          </figure>
+          <!-- Foto real: la fachada con el surtidor YPF (entrada_restaurante.webp) -->
+          <figure class="historia__bg-item" data-bg="2">
+            <img src="assets/img/historia-1934.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
+          </figure>
+          <!-- FOTO DE ARCHIVO PENDIENTE: el mostrador con fiambres y pastas.
+               Por ahora: la puerta y el salón que se ve adentro.
+               Es textura, no documento: va detrás de un velo al 94%. -->
+          <figure class="historia__bg-item" data-bg="3">
+            <img src="assets/img/historia-1963.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
+          </figure>
+          <!-- FOTO PENDIENTE: Gerardo amasando.
+               Por ahora: los raviolones recién cerrados sobre la mesada.
+               Es textura, no documento: va detrás de un velo al 94%. -->
+          <figure class="historia__bg-item" data-bg="4">
+            <img src="assets/img/historia-hoy.jpg" alt="" loading="lazy" decoding="async" width="1440" height="960">
+          </figure>
+          <div class="historia__veil"></div>
+        </div>
+
+        <div class="historia__inner">
+          <header class="historia__head">
+            <p class="eyebrow eyebrow--light">Nuestra historia</p>
+            <h2 class="historia__title" id="historia-title">Cien años en la misma esquina</h2>
+          </header>
+
+          <!-- Hitos: se muestran de a uno a medida que avanza el scroll -->
+          <div class="historia__slides">
+            <article class="historia__slide is-active" data-slide="0">
+              <p class="historia__year"><span>1905</span></p>
+              <h3 class="historia__slide-title">El abuelo llega de Italia</h3>
+              <p class="historia__text">Cruza el Atlántico y empieza a trabajar en la hacienda del Dr. Tomás Jofré, el pueblo que después le daría nombre a todo esto.</p>
+            </article>
+
+            <article class="historia__slide" data-slide="1">
+              <p class="historia__year"><span>1924</span></p>
+              <h3 class="historia__slide-title">1 de agosto: abre el almacén</h3>
+              <p class="historia__text">Domingo Pedro Silvano abre el almacén de ramos generales. Enriqueta Gatti, la cocinera, crea la receta de los raviolones que todavía seguimos haciendo igual.</p>
+            </article>
+
+            <article class="historia__slide" data-slide="2">
+              <p class="historia__year"><span>1934</span></p>
+              <h3 class="historia__slide-title">Llega el surtidor YPF</h3>
+              <p class="historia__text">Se instala el surtidor en la puerta. Todavía está ahí, en la entrada, igual que el primer día.</p>
+            </article>
+
+            <article class="historia__slide" data-slide="3">
+              <p class="historia__year"><span>1963</span></p>
+              <h3 class="historia__slide-title">Nace el restaurante</h3>
+              <p class="historia__text">Deja de pasar el tren y el almacén se reinventa: empiezan a servir fiambres y pastas sobre el mostrador. Así nace el restaurante.</p>
+            </article>
+
+            <article class="historia__slide" data-slide="4">
+              <p class="historia__year"><span>Hoy</span></p>
+              <h3 class="historia__slide-title">La cuarta generación</h3>
+              <p class="historia__text">Gerardo amasa cada mañana con la receta original. Y &ldquo;Minino&rdquo; recibe, uno por uno, a cada comensal que cruza la puerta.</p>
+            </article>
+          </div>
+
+          <!-- Línea de progreso + marcadores de año -->
+          <div class="historia__timeline">
+            <ol class="historia__markers">
+              <li class="historia__marker is-active" data-marker="0"><span>1905</span></li>
+              <li class="historia__marker" data-marker="1"><span>1924</span></li>
+              <li class="historia__marker" data-marker="2"><span>1934</span></li>
+              <li class="historia__marker" data-marker="3"><span>1963</span></li>
+              <li class="historia__marker" data-marker="4"><span>Hoy</span></li>
+            </ol>
+            <div class="historia__progress">
+              <span class="historia__progress-bar" data-historia-progress></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cierre de la sección -->
+      <div class="historia__closing">
+        <p class="historia__closing-text js-split">El primer restaurante de Tomás Jofré.</p>
+      </div>
+    </section>
+
+    <!-- =========================================================== -->
+    <!-- 6. CONTADOR                                                 -->
+    <!-- =========================================================== -->
+    <section class="contador" aria-labelledby="contador-title">
+      <div class="contador__inner">
+        <p class="eyebrow">Todos los días, desde temprano</p>
+        <p class="contador__number">
+          <span data-counter data-counter-to="1800" aria-hidden="true">0</span>
+          <span class="sr-only">1.800</span>
+        </p>
+        <h2 class="contador__title" id="contador-title">raviolones por día, uno por uno</h2>
+        <p class="contador__text">
+          Hechos a mano, con la misma receta de Enriqueta. Sin máquina que los cierre y sin atajos:
+          harina, huevo, relleno y paciencia.
+        </p>
+      </div>
+      <div class="grain" aria-hidden="true"></div>
+    </section>
+
+    <!-- =========================================================== -->
+    <!-- 7. GALERÍA con filtros + lightbox                           -->
+    <!-- =========================================================== -->
+    <section class="galeria" id="galeria" aria-labelledby="galeria-title">
+      <div class="container">
+        <header class="galeria__head">
+          <p class="eyebrow">Galería</p>
+          <h2 class="galeria__title js-split" id="galeria-title">Pasá y mirá</h2>
+        </header>
+
+        <div class="galeria__filters" role="group" aria-label="Filtrar galería por categoría">
+          <button class="chip is-active" type="button" data-filter="all" aria-pressed="true">Todo</button>
+          <button class="chip" type="button" data-filter="salon" aria-pressed="false">Salón</button>
+          <button class="chip" type="button" data-filter="jardin" aria-pressed="false">Jardín</button>
+          <button class="chip" type="button" data-filter="pastas" aria-pressed="false">Pastas</button>
+          <button class="chip" type="button" data-filter="historia" aria-pressed="false">Historia</button>
+        </div>
+
+        <!--
+          REEMPLAZAR IMÁGENES DE GALERÍA.
+          Nombre: galeria-<categoria>-NN.jpg
+          Horizontales 1600x1200 · cuadradas 1200x1200 · verticales 1200x1600
+          Cada botón necesita: data-full (versión grande), data-caption y el alt de la imagen.
+        -->
+        <ul class="galeria__grid" data-gallery-grid>
+          <!-- Fotos reales, recortadas de su Instagram -->
+          <li class="galeria__item galeria__item--wide" data-cat="pastas">
+            <button class="galeria__btn" type="button"
+                    data-full="assets/img/galeria-pastas-03.jpg"
+                    data-caption="Raviolones recién cerrados sobre la mesada, todavía con harina">
+              <img src="assets/img/galeria-pastas-03.jpg" alt="Fila de raviolones recién cerrados a mano sobre la mesada de granito enharinada" loading="lazy" decoding="async" width="1280" height="781">
+            </button>
+          </li>
+          <li class="galeria__item" data-cat="pastas">
+            <button class="galeria__btn" type="button"
+                    data-full="assets/img/galeria-pastas-01.jpg"
+                    data-caption="Raviolones con oliva y queso">
+              <img src="assets/img/galeria-pastas-01.jpg" alt="Raviolones con aceite de oliva y queso rallado en cazuela de barro" loading="lazy" decoding="async" width="1200" height="1200">
+            </button>
+          </li>
+          <li class="galeria__item galeria__item--tall" data-cat="pastas">
+            <button class="galeria__btn" type="button"
+                    data-full="assets/img/galeria-pastas-02.jpg"
+                    data-caption="Tallarines con manteca y queso">
+              <img src="assets/img/galeria-pastas-02.jpg" alt="Tallarines caseros con manteca y queso rallado en cazuela de barro" loading="lazy" decoding="async" width="1200" height="1600">
+            </button>
+          </li>
+          <li class="galeria__item" data-cat="pastas">
+            <button class="galeria__btn" type="button"
+                    data-full="assets/img/galeria-pastas-04.jpg"
+                    data-caption="El preferido: raviolones con estofado de pollo">
+              <img src="assets/img/galeria-pastas-04.jpg" alt="Raviolones con estofado de pollo, presas doradas y queso rallado" loading="lazy" decoding="async" width="1200" height="1200">
+            </button>
+          </li>
+
+          <!-- Fotos reales de la entrada del restaurante -->
+          <!-- FALTA FOTO REAL del salón. Reemplazar manteniendo el nombre. -->
+          <li class="galeria__item" data-cat="salon">
+            <button class="galeria__btn" type="button"
+                    data-full="assets/img/galeria-salon-01.jpg"
+                    data-caption="El salón, con el mostrador original del almacén">
+              <img src="assets/img/galeria-salon-01.jpg" alt="Salón principal de Silvano con el mostrador original del almacén" loading="lazy" decoding="async" width="1200" height="1200">
+            </button>
+          </li>
+          <li class="galeria__item galeria__item--wide" data-cat="historia">
+            <button class="galeria__btn" type="button"
+                    data-full="assets/img/galeria-historia-02.jpg"
+                    data-caption="La entrada, con el cartel de 1924 y el surtidor de 1934">
+              <img src="assets/img/galeria-historia-02.jpg" alt="Fachada de ladrillo de Silvano con el cartel rojo del 1 de agosto de 1924 y el surtidor celeste en la entrada" loading="lazy" decoding="async" width="1360" height="850">
+            </button>
+          </li>
+          <li class="galeria__item" data-cat="jardin">
+            <button class="galeria__btn" type="button"
+                    data-full="assets/img/galeria-jardin-01.jpg"
+                    data-caption="Los cien años, en la pared del patio">
+              <img src="assets/img/galeria-jardin-01.jpg" alt="Cartel de 100 años y una bandera argentina sobre la pared de ladrillo del patio, con un banco de madera debajo" loading="lazy" decoding="async" width="1200" height="1200">
+            </button>
+          </li>
+          <li class="galeria__item galeria__item--tall" data-cat="historia">
+            <button class="galeria__btn" type="button"
+                    data-full="assets/img/galeria-historia-01.jpg"
+                    data-caption="El surtidor de 1934, todavía en la entrada">
+              <img src="assets/img/galeria-historia-01.jpg" alt="El surtidor YPF celeste de 1934 junto al cartel de Silvano, en la entrada del restaurante" loading="lazy" decoding="async" width="764" height="1020">
+            </button>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- =========================================================== -->
+    <!-- 8. CÓMO LLEGAR                                              -->
+    <!-- =========================================================== -->
+    <section class="llegar" id="llegar" aria-labelledby="llegar-title">
+      <div class="container llegar__grid">
+        <div class="llegar__info">
+          <p class="eyebrow">Cómo llegar</p>
+          <h2 class="llegar__title js-split" id="llegar-title">Calle 810 y 807, Tomás Jofré</h2>
+          <p class="llegar__lead">
+            A 15 minutos de Mercedes, en el pueblo de los restaurantes de campo.
+            Estamos donde estuvo siempre el almacén.
+          </p>
+
+          <dl class="info-list">
+            <div class="info-list__row">
+              <dt class="info-list__key">Horarios</dt>
+              <dd class="info-list__val">
+                <span>Viernes y sábados: 12 a 16 h y 20:30 a 23 h</span>
+                <span>Domingos y feriados: 12 a 18 h</span>
+              </dd>
+            </div>
+            <div class="info-list__row">
+              <dt class="info-list__key">Pago</dt>
+              <!-- REEMPLAZAR: medios de pago a confirmar -->
+              <dd class="info-list__val"><span data-placeholder>[ A CONFIRMAR — efectivo / débito ]</span></dd>
+            </div>
+            <div class="info-list__row">
+              <dt class="info-list__key">Servicios</dt>
+              <dd class="info-list__val">
+                <span>Jardín al aire libre</span>
+                <span>Acceso para personas con discapacidad</span>
+                <span>Estacionamiento</span>
+              </dd>
+            </div>
+            <div class="info-list__row">
+              <dt class="info-list__key">Dirección</dt>
+              <dd class="info-list__val">
+                <span>Calle 810 y 807, Tomás Jofré</span>
+                <span>Partido de Mercedes, Buenos Aires</span>
+              </dd>
+            </div>
+          </dl>
+
+          <p class="llegar__warn">
+            <strong>Reservá con anticipación:</strong> los fines de semana se llena.
+          </p>
+
+          <div class="llegar__actions">
+            <a class="btn btn--primary" data-magnetic
+               href="https://wa.me/5492324453130?text=Hola!%20Quiero%20reservar%20para%20___%20personas%20el%20d%C3%ADa%20___"
+               target="_blank" rel="noopener">Reservar por WhatsApp</a>
+            <a class="btn btn--outline" data-magnetic
+               href="https://www.google.com/maps/dir/?api=1&amp;destination=Restaurante+Silvano+Tom%C3%A1s+Jofr%C3%A9+Buenos+Aires"
+               target="_blank" rel="noopener">Abrir en Google Maps</a>
+          </div>
+        </div>
+
+        <div class="llegar__map">
+          <!-- Mapa embebido sin API key. Verificá que el pin caiga en la puerta del restaurante. -->
+          <iframe
+            title="Mapa de ubicación del Restaurante Silvano en Tomás Jofré"
+            src="https://www.google.com/maps?q=Restaurante+Silvano,+Calle+810+y+807,+Tom%C3%A1s+Jofr%C3%A9,+Buenos+Aires&amp;output=embed"
+            width="600" height="600" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================== -->
+    <!-- 9. CTA FINAL a pantalla completa                            -->
+    <!-- =========================================================== -->
+    <section class="cta" aria-labelledby="cta-title">
+      <!-- REEMPLAZAR: cta-bg.jpg (2000x1200) -->
+      <div class="cta__bg" aria-hidden="true" data-cta-bg>
+        <img src="assets/img/cta-bg.jpg" alt="" loading="lazy" decoding="async" width="2000" height="1200">
+      </div>
+      <div class="cta__inner">
+        <p class="eyebrow eyebrow--light">Mesa lista</p>
+        <h2 class="cta__title js-split" id="cta-title">¿Venís este fin de semana?</h2>
+        <p class="cta__text">Escribinos y te guardamos lugar. Decinos cuántos son y qué día.</p>
+        <a class="btn btn--primary btn--lg" data-magnetic
+           href="https://wa.me/5492324453130?text=Hola!%20Quiero%20reservar%20para%20___%20personas%20el%20d%C3%ADa%20___"
+           target="_blank" rel="noopener">
+          <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.97L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.06c-.24.68-1.4 1.31-1.94 1.36-.54.05-1.04.24-3.5-.73-2.96-1.17-4.83-4.23-4.98-4.43-.15-.2-1.19-1.59-1.19-3.03 0-1.44.75-2.15 1.02-2.45.27-.29.59-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.83 2.02.9 2.17.07.15.12.32.02.51-.1.2-.15.32-.29.49-.15.17-.31.39-.45.52-.15.15-.3.31-.13.6.17.29.76 1.26 1.63 2.04 1.12 1 2.06 1.31 2.35 1.46.29.15.46.12.63-.07.17-.2.73-.85.93-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.12.07.71-.17 1.39Z"/>
+          </svg>
+          Reservar por WhatsApp
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================= -->
+  <!-- 10. FOOTER                                                    -->
+  <!-- ============================================================= -->
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <p class="logo logo--footer">
+          <img class="logo__mark" src="assets/img/logo-silvano.png"
+               alt="Logo de Silvano: el surtidor sobre un rombo rojo" width="256" height="256" loading="lazy" decoding="async">
+          <span class="logo__name">Silvano</span>
+          <span class="logo__sep" aria-hidden="true">·</span>
+          <span class="logo__since">Desde 1924</span>
+        </p>
+        <p class="footer__tagline">El primer restaurante de Tomás Jofré.</p>
+      </div>
+
+      <nav class="footer__col" aria-label="Enlaces del sitio">
+        <h2 class="footer__heading">El lugar</h2>
+        <ul class="footer__list">
+          <li><a href="#menu">Menú</a></li>
+          <li><a href="#historia">Historia</a></li>
+          <li><a href="#galeria">Galería</a></li>
+          <li><a href="#llegar">Cómo llegar</a></li>
+        </ul>
+      </nav>
+
+      <div class="footer__col">
+        <h2 class="footer__heading">Contacto</h2>
+        <ul class="footer__list">
+          <li><a href="https://wa.me/5492324453130?text=Hola!%20Quiero%20reservar%20para%20___%20personas%20el%20d%C3%ADa%20___" target="_blank" rel="noopener">WhatsApp +54 9 2324 45-3130</a></li>
+          <li><a href="https://www.instagram.com/silvano_tomasjofre/" target="_blank" rel="noopener">Instagram @silvano_tomasjofre</a></li>
+          <!-- REEMPLAZAR: URL real de la página de Facebook -->
+          <li><a href="https://www.facebook.com/" target="_blank" rel="noopener">Facebook</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h2 class="footer__heading">Dónde estamos</h2>
+        <address class="footer__address">
+          Calle 810 y 807<br>
+          Tomás Jofré, Mercedes<br>
+          Buenos Aires, Argentina
+        </address>
+        <p class="footer__hours">
+          Vie y sáb: 12–16 h / 20:30–23 h<br>
+          Dom y feriados: 12–18 h
+        </p>
+      </div>
+    </div>
+
+    <div class="container footer__bottom">
+      <p>&copy; <span data-year>2026</span> Silvano. Tomás Jofré, Buenos Aires.</p>
+      <p class="footer__credit">Cien años amasando a mano.</p>
+    </div>
+  </footer>
+
+  <!-- ============================================================= -->
+  <!-- Botón flotante de WhatsApp                                    -->
+  <!-- ============================================================= -->
+  <a class="wa-float" data-wa-float
+     href="https://wa.me/5492324453130?text=Hola!%20Quiero%20reservar%20para%20___%20personas%20el%20d%C3%ADa%20___"
+     target="_blank" rel="noopener" aria-label="Reservar por WhatsApp">
+    <svg class="wa-float__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.97L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.06c-.24.68-1.4 1.31-1.94 1.36-.54.05-1.04.24-3.5-.73-2.96-1.17-4.83-4.23-4.98-4.43-.15-.2-1.19-1.59-1.19-3.03 0-1.44.75-2.15 1.02-2.45.27-.29.59-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.83 2.02.9 2.17.07.15.12.32.02.51-.1.2-.15.32-.29.49-.15.17-.31.39-.45.52-.15.15-.3.31-.13.6.17.29.76 1.26 1.63 2.04 1.12 1 2.06 1.31 2.35 1.46.29.15.46.12.63-.07.17-.2.73-.85.93-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.12.07.71-.17 1.39Z"/>
+    </svg>
+    <span class="wa-float__label">Reservar</span>
+  </a>
+
+  <!-- ============================================================= -->
+  <!-- Lightbox de galería                                           -->
+  <!-- ============================================================= -->
+  <div class="lightbox" data-lightbox hidden>
+    <div class="lightbox__backdrop" data-lightbox-close></div>
+    <div class="lightbox__dialog" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+      <button class="lightbox__close" type="button" data-lightbox-close aria-label="Cerrar imagen">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <button class="lightbox__nav lightbox__nav--prev" type="button" data-lightbox-prev aria-label="Imagen anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <figure class="lightbox__figure">
+        <img class="lightbox__img" data-lightbox-img src="" alt="">
+        <figcaption class="lightbox__caption" data-lightbox-caption></figcaption>
+      </figure>
+      <button class="lightbox__nav lightbox__nav--next" type="button" data-lightbox-next aria-label="Imagen siguiente">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- Librerías (CDN) + script propio                               -->
+  <!-- ============================================================= -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
+  <script src="main.js" defer></script>
+</body>
+</html>

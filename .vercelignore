@@ -1,0 +1,9 @@
+# Capturas y originales que usamos para recortar los assets.
+# Son material de trabajo: no se publican.
+# Los patrones van anclados a la raíz, así que assets/img/ no se toca.
+/*.png
+/*.jpg
+/*.jpeg
+/*.jfif
+/*.webp
+README.md

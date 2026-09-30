@@ -1,0 +1,19 @@
+# Sistema operativo
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Vercel
+.vercel/
+
+# No hay build step, pero por las dudas
+node_modules/
+
+# Las capturas originales de Instagram SI se versionan a propósito:
+# son el material del que salen los recortes de assets/img/.
