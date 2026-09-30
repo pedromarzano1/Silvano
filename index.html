@@ -157,21 +157,18 @@
       <!-- Capa de video: zoom-out + parallax con scrub -->
       <div class="hero__media" data-hero-media>
         <!--
-          VIDEO DEL HERO. Dejar el archivo en:
-            assets/video/video-silvano.mp4   (H.264, yuv420p, < 3 MB)
-            assets/video/video-silvano.webm  (VP9, opcional: pesa menos)
-          OJO: va dentro de assets/video/, no en la raíz del proyecto.
-          Si solo hay .mp4, alcanza: el navegador ignora el source que falta.
-          Mientras no esté, se ve assets/img/hero-poster.jpg y el zoom-out
-          con scroll funciona igual.
-          Duración ideal: 8 a 12 s en loop, sin audio.
+          VIDEO DEL HERO: assets/video/hero-silvano.mp4
+          H.264, 1280x720 horizontal, 10 s, 3,3 MB, con faststart.
+          Si alguna vez se genera un .webm (pesa ~30% menos), agregarlo como
+          un <source> ANTES del mp4: el navegador usa el primero que puede.
+          Si el archivo faltara, se ve assets/img/hero-poster.jpg y el
+          zoom-out con scroll funciona igual.
         -->
         <video class="hero__video" data-hero-video
                poster="assets/img/hero-poster.jpg"
                muted loop playsinline preload="none"
                aria-hidden="true" tabindex="-1">
-          <source src="assets/video/video-silvano.webm" type="video/webm">
-          <source src="assets/video/video-silvano.mp4" type="video/mp4">
+          <source src="assets/video/hero-silvano.mp4" type="video/mp4">
         </video>
         <div class="hero__overlay" aria-hidden="true"></div>
         <div class="grain" aria-hidden="true"></div>

@@ -125,13 +125,28 @@ cualquier reemplazo: la sección es sobre el paso del tiempo.
 Soltá el archivo con el mismo nombre en `assets/img/` y pisa al placeholder,
 sin tocar código. Exportar a ~80 % de calidad, apuntando a menos de 300 KB.
 
-### Video del hero (falta)
+### Video del hero
 
-El HTML ya lo busca acá. **Tiene que ir dentro de `assets/video/`, no en la
-raíz del proyecto:**
+`assets/video/hero-silvano.mp4` — H.264, **1280×720 horizontal**, 10 s, 3,3 MB,
+con `faststart` (arranca sin esperar la descarga completa).
 
-| Archivo | Formato | Medidas | Peso |
-|---|---|---|---|
+Reemplaza a una versión anterior vertical de 384×848, que en desktop se
+agrandaba 6,4× y mostraba solo el 22 % del cuadro.
+
+Dos cosas opcionales, si alguna vez querés afinarlo. Hacen falta `ffmpeg`:
+
+```bash
+# Sacar la pista de audio: el hero va muteado, son ~200 KB de más.
+ffmpeg -i hero-silvano.mp4 -an -c:v copy hero-silvano-sinaudio.mp4
+
+# Generar el webm, que pesa ~30 % menos en navegadores que lo soportan.
+ffmpeg -i hero-silvano.mp4 -an -c:v libvpx-vp9 -crf 34 -b:v 0 hero-silvano.webm
+```
+
+Si generás el `.webm`, agregalo en `index.html` como un `<source>` **antes**
+del mp4: el navegador usa el primero que puede reproducir.
+
+---|---|---|---|
 | `assets/video/video-silvano.mp4` | H.264, yuv420p | 1920×1080 | < 3 MB |
 | `assets/video/video-silvano.webm` | VP9 (opcional) | 1920×1080 | < 2 MB |
 
