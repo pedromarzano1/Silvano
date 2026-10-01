@@ -373,6 +373,13 @@
     if (odoLabel) odoLabel.textContent = isToday ? 'Hoy' : y === '0000' ? 'Año' : `Año ${y}`;
   };
 
+  // Parada intermedia de la ruta (Mercedes), ubicada sobre el camino
+  const routeLine = $('[data-route-path]');
+  $$('[data-route-stop]').forEach(g => {
+    const pt = routeLine.getPointAtLength(routeLine.getTotalLength() * Number(g.dataset.routeStop));
+    g.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
+  });
+
   /* -------------------------------------------------------------------
      Sin GSAP o con movimiento reducido: estados finales y listo
      ------------------------------------------------------------------- */
@@ -397,7 +404,7 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     // Contador de ruta y textos rellenos, ya completos
-    const rm = $('[data-route-min]'); if (rm) rm.textContent = '15';
+    const rm = $('[data-route-min]'); if (rm) rm.textContent = '100';
     // El header toma el color de la sección que está debajo
     const io = new IntersectionObserver(entries => entries.forEach(en => {
       if (en.isIntersecting) document.body.dataset.theme = en.target.dataset.themeSection;
@@ -725,7 +732,7 @@
       routePath.style.strokeDashoffset = String(L * (1 - p));
       const pt = routePath.getPointAtLength(L * p);
       pin.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
-      minEl.textContent = Math.round(p * 15);
+      minEl.textContent = Math.round(p * 100);
     };
     drawRoute(0);
     ScrollTrigger.create({

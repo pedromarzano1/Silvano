@@ -555,10 +555,12 @@ address { font-style: normal; }
 .route__lane { fill: none; stroke: var(--bg); stroke-width: 1.5; stroke-dasharray: 6 8; }
 .route__draw { fill: none; stroke: var(--red); stroke-width: 4; stroke-linecap: round; }
 .route__start { fill: var(--fg); }
+.route__stop circle { fill: var(--bg); stroke: var(--fg); stroke-width: 3; }
+.route__stop text { font-size: 13px; }
 .route text { fill: var(--fg); font: 800 15px var(--text); }
 .route [data-route-pin] { color: var(--red); }
 .route__time {
-  position: absolute; right: 0; bottom: 0;
+  margin-top: .5rem; text-align: right;
   font-family: var(--display); font-size: 2.25rem; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .facts { display: grid; gap: 1.25rem; margin-bottom: 2rem; }
