@@ -184,22 +184,35 @@
     const dots = $('[data-notes-dots]', notes);
     const prev = $('[data-notes-prev]', notes);
     const next = $('[data-notes-next]', notes);
-    items.forEach((_, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.setAttribute('aria-label', `Ver opinión ${i + 1} de ${items.length}`);
-      b.addEventListener('click', () => go(i));
-      dots.appendChild(b);
-    });
     const step = () => items[1].offsetLeft - items[0].offsetLeft;
-    const index = () => Math.round(track.scrollLeft / step());
-    const go = i => track.scrollTo({ left: Math.max(0, Math.min(items.length - 1, i)) * step(), behavior: reduced ? 'auto' : 'smooth' });
+    const maxScroll = () => track.scrollWidth - track.clientWidth;
+    // Posiciones reales: en PC se ven 3 notas a la vez, así que hay menos paradas que notas
+    const stops = () => Math.max(1, Math.ceil(maxScroll() / step() - 0.05) + 1);
+    const index = () => (track.scrollLeft >= maxScroll() - 4 ? stops() - 1 : Math.round(track.scrollLeft / step()));
+    const go = i => {
+      const k = Math.max(0, Math.min(stops() - 1, i));
+      const left = k === stops() - 1 ? maxScroll() : k * step();
+      track.scrollTo({ left, behavior: reduced ? 'auto' : 'smooth' });
+    };
+    const buildDots = () => {
+      const n = stops();
+      if (dots.children.length === n) return;
+      dots.replaceChildren();
+      for (let i = 0; i < n; i++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', `Ir a la posición ${i + 1} de ${n}`);
+        b.addEventListener('click', () => go(i));
+        dots.appendChild(b);
+      }
+      dots.hidden = n < 2;
+    };
     const sync = () => {
+      buildDots();
       const i = index();
-      const max = track.scrollWidth - track.clientWidth - 4;
       $$('button', dots).forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
       prev.disabled = track.scrollLeft <= 4;
-      next.disabled = track.scrollLeft >= max;
+      next.disabled = track.scrollLeft >= maxScroll() - 4;
     };
     prev.addEventListener('click', () => go(index() - 1));
     next.addEventListener('click', () => go(index() + 1));
