@@ -1,981 +1,759 @@
-/* ============================================================================
-   SILVANO · Tomás Jofré — main.js
-   Vanilla JS + GSAP/ScrollTrigger + Lenis.
-
-   Orden:
-    0  Helpers y estado
-    1  Lenis (smooth scroll) + puente con ScrollTrigger
-    2  Split text
-    3  Header (hide/show + estado stuck) y nav mobile
-    4  Cursor custom + hover magnético
-    5  Hero (video, título, zoom-out con scrub)
-    6  Historia (timeline pinneada)
-    7  Contador animado
-    8  Menú (scroll horizontal pinneado / carrusel mobile)
-    9  Reveals genéricos (split, clip-path, parallax)
-   10  Slider de reseñas
-   11  Galería (filtros + lightbox)
-   12  Varios (año del footer, refresh final)
-
-   Regla general: todo lo animado usa transform/opacity.
-   Si el usuario pidió menos movimiento, se cancelan pins, parallax y autoplays.
-   ========================================================================== */
-
-(function () {
+/* =====================================================================
+   Silvano: interacciones
+   GSAP + ScrollTrigger + Flip + Lenis. Todo degrada bien si el CDN falla
+   o si la persona prefiere movimiento reducido.
+   ===================================================================== */
+(() => {
   'use strict';
 
-  /* ==========================================================================
-     0. HELPERS Y ESTADO
-     ====================================================================== */
-  const $  = (sel, ctx = document) => ctx.querySelector(sel);
-  const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
-
-  const hasGSAP = typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
-  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const reduced = () => motionQuery.matches;
-
-  // Puntero fino = mouse/trackpad. Sirve para cursor custom y hover magnético.
-  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
-
-  // Pantalla táctil: el scroll nativo del sistema es mucho más fluido que
-  // cualquier suavizado por JS, así que ahí se aligera todo.
-  const esTactil = window.matchMedia('(pointer: coarse)').matches;
-
-  /* ---------------------------------------------------------------------
-     Ajustes a mano
-     --------------------------------------------------------------------- */
-
-  // Cursor custom (el puntito con el aro). Apagado: molesta mas de lo que suma.
-  // Poner en true para recuperarlo; el markup y el CSS siguen en su lugar.
-  const CURSOR_CUSTOM = false;
-
-
-  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const hasGSAP = !!(window.gsap && window.ScrollTrigger);
+  const WA_NUMBER = '5492324453130';
   const nf = new Intl.NumberFormat('es-AR');
 
-  if (hasGSAP) {
-    gsap.registerPlugin(ScrollTrigger);
-    // Evita saltos raros al recalcular en mobile cuando aparece/desaparece la barra del browser
-    ScrollTrigger.config({ ignoreMobileResize: true });
+  $$('[data-current-year]').forEach(el => (el.textContent = new Date().getFullYear()));
+
+  /* -------------------------------------------------------------------
+     Hora de Argentina: base para "abierto ahora" y para la reserva
+     ------------------------------------------------------------------- */
+  function nowInAR() {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Argentina/Buenos_Aires',
+      year: 'numeric', month: 'numeric', day: 'numeric',
+      hour: 'numeric', minute: 'numeric', hourCycle: 'h23'
+    }).formatToParts(new Date()).reduce((o, p) => ((o[p.type] = p.value), o), {});
+    // Fecha "local AR" guardada en UTC para operar sin corrimientos
+    return new Date(Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute));
   }
+  // Minutos desde la medianoche. Domingo = 0.
+  const SCHEDULE = {
+    5: [[720, 960], [1230, 1380]],
+    6: [[720, 960], [1230, 1380]],
+    0: [[720, 1080]]
+  };
+  const DAY_NAMES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  const fmtTime = m => (m % 60 ? `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}` : `${m / 60}`) + ' h';
 
-  /* ==========================================================================
-     1. LENIS + PUENTE CON SCROLLTRIGGER
-     Con reduced-motion no se instancia: queda el scroll nativo.
-     ====================================================================== */
-  let lenis = null;
-
-  function initSmoothScroll() {
-    if (reduced() || typeof window.Lenis === 'undefined') return;
-
-    // En celular no se usa Lenis: el scroll nativo está acelerado por el
-    // compositor del sistema y ningún suavizado por JS lo mejora.
-    // ScrollTrigger funciona igual sobre el scroll nativo.
-    if (esTactil) return;
-
-    lenis = new Lenis({
-      duration: 1.05,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 1.6,
-      gestureOrientation: 'vertical'
-    });
-
-    if (hasGSAP) {
-      // Lenis manda: ScrollTrigger se actualiza en cada frame de scroll
-      lenis.on('scroll', ScrollTrigger.update);
-      gsap.ticker.add((time) => lenis.raf(time * 1000));
-      gsap.ticker.lagSmoothing(0);
-    } else {
-      const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
-      requestAnimationFrame(raf);
+  function openStatus() {
+    const now = nowInAR();
+    const dow = now.getUTCDay();
+    const t = now.getUTCHours() * 60 + now.getUTCMinutes();
+    for (const [a, b] of SCHEDULE[dow] || []) {
+      if (t >= a && t < b) return { open: true, text: `Abierto hasta las ${fmtTime(b)}` };
     }
-  }
-
-  // Anclas internas: las maneja Lenis para respetar el header fijo
-  function initAnchors() {
-    const headerOffset = () => {
-      const h = $('[data-header]');
-      return h ? -(h.offsetHeight + 8) : -72;
-    };
-
-    $$('a[href^="#"]').forEach((link) => {
-      link.addEventListener('click', (e) => {
-        const id = link.getAttribute('href');
-        if (!id || id === '#') return;
-        const target = document.querySelector(id);
-        if (!target) return;
-
-        e.preventDefault();
-        closeNav();
-
-        if (lenis) {
-          lenis.scrollTo(target, { offset: headerOffset(), duration: 1.15 });
-        } else {
-          const y = target.getBoundingClientRect().top + window.scrollY + headerOffset();
-          window.scrollTo({ top: y, behavior: reduced() ? 'auto' : 'smooth' });
-        }
-        // Mantiene la accesibilidad del salto: el destino recibe foco
-        target.setAttribute('tabindex', '-1');
-        target.focus({ preventScroll: true });
-      });
-    });
-  }
-
-  /* ==========================================================================
-     2. SPLIT TEXT
-     Envuelve cada palabra en <span class="word"><span class="word__in">.
-     La máscara vive en CSS; acá solo generamos el markup.
-     ====================================================================== */
-  function splitWords(el) {
-    if (!el || el.dataset.split === 'done') return [];
-    const text = el.textContent.trim();
-    el.dataset.split = 'done';
-    el.textContent = '';
-
-    const parts = text.split(/\s+/);
-    const inners = [];
-
-    parts.forEach((word, i) => {
-      const outer = document.createElement('span');
-      outer.className = 'word';
-      const inner = document.createElement('span');
-      inner.className = 'word__in';
-      inner.textContent = word;
-      outer.appendChild(inner);
-      el.appendChild(outer);
-      if (i < parts.length - 1) el.appendChild(document.createTextNode(' '));
-      inners.push(inner);
-    });
-
-    return inners;
-  }
-
-  /* ==========================================================================
-     3. HEADER + NAV MOBILE
-     ====================================================================== */
-  const header = $('[data-header]');
-  const navEl = $('#nav');
-  const navToggle = $('.nav-toggle');
-
-  function closeNav() {
-    if (!navEl || !navToggle) return;
-    navEl.classList.remove('is-open');
-    navToggle.setAttribute('aria-expanded', 'false');
-    navToggle.setAttribute('aria-label', 'Abrir menú de navegación');
-    if (lenis) lenis.start();
-  }
-
-  function initHeader() {
-    if (!header) return;
-
-    let lastY = window.scrollY;
-
-    const onScroll = (y) => {
-      const scrollY = Math.max(0, y);
-
-      // Fondo papel a partir de un poco de scroll
-      header.classList.toggle('is-stuck', scrollY > 40);
-
-      // Se esconde al bajar, aparece al subir. No se esconde con el nav abierto.
-      const goingDown = scrollY > lastY;
-      const pastHero = scrollY > window.innerHeight * 0.55;
-      const navOpen = navEl && navEl.classList.contains('is-open');
-
-      if (!navOpen && pastHero && goingDown && scrollY - lastY > 4) {
-        header.classList.add('is-hidden');
-      } else if (!goingDown || !pastHero) {
-        header.classList.remove('is-hidden');
-      }
-
-      lastY = scrollY;
-    };
-
-    if (lenis) {
-      lenis.on('scroll', ({ scroll }) => onScroll(scroll));
-    } else {
-      window.addEventListener('scroll', () => onScroll(window.scrollY), { passive: true });
-    }
-    onScroll(window.scrollY);
-
-    // --- Nav mobile ---
-    if (navToggle && navEl) {
-      navToggle.addEventListener('click', () => {
-        const open = navEl.classList.toggle('is-open');
-        navToggle.setAttribute('aria-expanded', String(open));
-        navToggle.setAttribute('aria-label', open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación');
-        header.classList.remove('is-hidden');
-        if (lenis) { open ? lenis.stop() : lenis.start(); }
-      });
-
-      // Escape cierra; click afuera cierra
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && navEl.classList.contains('is-open')) {
-          closeNav();
-          navToggle.focus();
-        }
-      });
-      document.addEventListener('click', (e) => {
-        if (!navEl.classList.contains('is-open')) return;
-        if (navEl.contains(e.target) || navToggle.contains(e.target)) return;
-        closeNav();
-      });
-    }
-  }
-
-  /* ==========================================================================
-     4. CURSOR CUSTOM + HOVER MAGNÉTICO
-     Solo desktop con puntero fino y sin reduced-motion.
-     ====================================================================== */
-  function initCursor() {
-    if (!CURSOR_CUSTOM) return;
-    if (!hasGSAP || reduced() || !finePointer.matches) return;
-
-    const cursor = $('.cursor');
-    const dot = $('.cursor__dot');
-    const ring = $('.cursor__ring');
-    if (!cursor || !dot || !ring) return;
-
-    document.body.classList.add('has-custom-cursor');
-
-    const setDotX = gsap.quickSetter(dot, 'x', 'px');
-    const setDotY = gsap.quickSetter(dot, 'y', 'px');
-    // El aro sigue al puntero con retardo: da la sensación de inercia
-    const ringX = gsap.quickTo(ring, 'x', { duration: 0.45, ease: 'power3' });
-    const ringY = gsap.quickTo(ring, 'y', { duration: 0.45, ease: 'power3' });
-
-    window.addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      setDotX(e.clientX);
-      setDotY(e.clientY);
-      ringX(e.clientX);
-      ringY(e.clientY);
-    }, { passive: true });
-
-    // Crece sobre elementos interactivos
-    const interactive = 'a, button, [role="button"], input, .galeria__btn';
-    document.addEventListener('pointerover', (e) => {
-      if (e.target.closest && e.target.closest(interactive)) document.body.classList.add('cursor-hover');
-    });
-    document.addEventListener('pointerout', (e) => {
-      if (e.target.closest && e.target.closest(interactive)) document.body.classList.remove('cursor-hover');
-    });
-
-    // Se aclara sobre las secciones oscuras
-    $$('.hero, .historia, .cta, .footer').forEach((section) => {
-      section.addEventListener('pointerenter', () => document.body.classList.add('cursor-dark'));
-      section.addEventListener('pointerleave', () => document.body.classList.remove('cursor-dark'));
-    });
-
-    // El cursor se esconde si el mouse sale de la ventana
-    document.addEventListener('mouseleave', () => gsap.to(cursor, { opacity: 0, duration: 0.2 }));
-    document.addEventListener('mouseenter', () => gsap.to(cursor, { opacity: 1, duration: 0.2 }));
-  }
-
-  function initMagnetic() {
-    if (!hasGSAP || reduced() || !finePointer.matches) return;
-
-    $$('[data-magnetic]').forEach((el) => {
-      const xTo = gsap.quickTo(el, 'x', { duration: 0.4, ease: 'power3' });
-      const yTo = gsap.quickTo(el, 'y', { duration: 0.4, ease: 'power3' });
-      const strength = 0.28; // desplazamiento máximo relativo al tamaño del botón
-
-      el.addEventListener('pointermove', (e) => {
-        const r = el.getBoundingClientRect();
-        xTo((e.clientX - (r.left + r.width / 2)) * strength);
-        yTo((e.clientY - (r.top + r.height / 2)) * strength);
-      });
-      el.addEventListener('pointerleave', () => { xTo(0); yTo(0); });
-      el.addEventListener('blur', () => { xTo(0); yTo(0); });
-    });
-  }
-
-  /* ==========================================================================
-     5. HERO
-     - El video arranca solo cuando el hero está visible (preload="none").
-     - Título palabra por palabra al cargar.
-     - Al scrollear: zoom-out del video (scale 1.14 -> 1) y texto que sube y se va.
-     ====================================================================== */
-  function initHeroVideo() {
-    const video = $('[data-hero-video]');
-    if (!video) return;
-
-    // El brief pide desactivar el video con prefers-reduced-motion, y el CSS
-    // ademas lo oculta. Se avisa por consola porque, si el sistema tiene esa
-    // preferencia activada, el hero se ve estatico y no es obvio por que.
-    if (reduced()) {
-      video.removeAttribute('autoplay');
-      video.pause();
-      console.info('[Silvano] prefers-reduced-motion está activado en este sistema: ' +
-                   'el video del hero queda desactivado a propósito y se muestra el poster.');
-      return;
-    }
-
-    // Los errores no se silencian: si el video no arranca, hay que poder verlo.
-    video.addEventListener('error', () => {
-      const codes = { 1: 'ABORTED', 2: 'NETWORK', 3: 'DECODE', 4: 'SRC_NOT_SUPPORTED' };
-      const err = video.error;
-      console.warn('[Silvano] el video del hero falló:',
-                   err ? (codes[err.code] || err.code) : 'motivo desconocido',
-                   err && err.message ? err.message : '');
-    });
-
-    let desbloqueoPendiente = false;
-
-    const intentarPlay = () => {
-      const p = video.play();
-      if (!p || typeof p.catch !== 'function') return;
-      p.catch((err) => {
-        // NotAllowedError = política de autoplay. Se reintenta en el primer
-        // gesto del usuario, que es lo único que el navegador acepta.
-        console.warn('[Silvano] no se pudo reproducir el video del hero:', err.name, err.message);
-        if (desbloqueoPendiente) return;
-        desbloqueoPendiente = true;
-        const desbloquear = () => {
-          video.play().catch(() => {});
-          window.removeEventListener('pointerdown', desbloquear);
-          window.removeEventListener('keydown', desbloquear);
-          window.removeEventListener('touchstart', desbloquear);
-        };
-        window.addEventListener('pointerdown', desbloquear, { once: true });
-        window.addEventListener('keydown', desbloquear, { once: true });
-        window.addEventListener('touchstart', desbloquear, { once: true });
-      });
-    };
-
-    const arrancar = () => {
-      if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load();
-      intentarPlay();
-    };
-
-    // Solo reproduce mientras el hero está en pantalla: ahorra batería y CPU
-    if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) arrancar();
-          else if (!video.paused) video.pause();
-        });
-      }, { threshold: 0.01 });
-      io.observe(video);
-    } else {
-      arrancar();
-    }
-  }
-
-  function initHeroAnimation() {
-    const hero = $('.hero');
-    if (!hero || !hasGSAP) return;
-
-    const title = $('.hero__title');
-    const fades = $$('[data-hero-fade]', hero);
-
-    if (reduced()) return;
-
-    // --- Entrada ---
-    const words = splitWords(title);
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-    if (words.length) {
-      gsap.set(words, { yPercent: 115 });
-      intro.to(words, { yPercent: 0, duration: 1.05, stagger: 0.055 }, 0.15);
-    }
-    gsap.set(fades, { opacity: 0, y: 24 });
-    intro.to(fades, { opacity: 1, y: 0, duration: 0.8, stagger: 0.12 }, 0.5);
-
-    // --- Scroll: zoom-out del media + salida del contenido ---
-    const media = $('[data-hero-media]');
-    if (media) {
-      gsap.to(media, {
-        scale: 1,
-        yPercent: 6,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: hero,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true
-        }
-      });
-    }
-
-    gsap.to('.hero__content', {
-      yPercent: -28,
-      opacity: 0,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: hero,
-        start: '25% top',
-        end: 'bottom top',
-        scrub: true
-      }
-    });
-  }
-
-  /* ==========================================================================
-     6. HISTORIA — timeline compacta
-     Ya no hay pin. La sección entra en una pantalla y el scroll nunca se
-     detiene: pinnear 5 pantallas era la queja principal contra esta sección.
-     Solo queda una entrada escalonada de los hitos al aparecer.
-     ====================================================================== */
-  function initHistoria() {
-    const linea = $('[data-linea]');
-    const closing = $('.historia__closing-text');
-
-    if (!hasGSAP || reduced()) return;   // sin JS la sección ya se lee entera
-
-    if (linea) {
-      const hitos = $$('.linea__hito', linea);
-      gsap.from(hitos, {
-        opacity: 0,
-        y: 22,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.1,
-        scrollTrigger: { trigger: linea, start: 'top 85%', once: true }
-      });
-    }
-
-    // El cierre entra palabra por palabra
-    if (closing) {
-      const words = splitWords(closing);
-      gsap.set(words, { yPercent: 115 });
-      gsap.to(words, {
-        yPercent: 0,
-        duration: 0.9,
-        ease: 'power3.out',
-        stagger: 0.05,
-        scrollTrigger: { trigger: closing, start: 'top 88%', once: true }
-      });
-    }
-  }
-
-  /* ==========================================================================
-     7. CONTADOR
-     ====================================================================== */
-  function initCounter() {
-    const el = $('[data-counter]');
-    if (!el) return;
-
-    const to = Number(el.dataset.counterTo || 0);
-
-    if (!hasGSAP || reduced()) {
-      el.textContent = nf.format(to);
-      return;
-    }
-
-    const obj = { v: 0 };
-    el.textContent = '0';
-
-    gsap.to(obj, {
-      v: to,
-      duration: 2.2,
-      ease: 'power2.out',
-      onUpdate: () => { el.textContent = nf.format(Math.round(obj.v)); },
-      scrollTrigger: { trigger: el, start: 'top 80%', once: true }
-    });
-  }
-
-  /* ==========================================================================
-     8. MENÚ — scroll horizontal pinneado (desktop) / carrusel (mobile)
-     ====================================================================== */
-  function initMenu() {
-    const pin = $('[data-menu-pin]');
-    const viewport = $('[data-menu-viewport]');
-    const track = $('[data-menu-track]');
-    if (!pin || !viewport || !track) return;
-
-    if (!hasGSAP || reduced()) return; // el CSS ya deja el carrusel/grid usable
-
-    const mm = gsap.matchMedia();
-
-    // --- Desktop: pin + traslación horizontal ---
-    mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
-      // Distancia = ancho del track menos el ancho útil del viewport (sin paddings)
-      const gutter = () => parseFloat(getComputedStyle(viewport).paddingLeft) || 0;
-      const distance = () => Math.max(0, track.scrollWidth - (viewport.clientWidth - gutter() * 2));
-
-      const tween = gsap.to(track, {
-        x: () => -distance(),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: pin,
-          start: 'top top',
-          end: () => '+=' + (distance() + window.innerHeight * 0.4),
-          pin: true,
-          pinSpacing: true,
-          scrub: 0.8,
-          anticipatePin: 1,
-          invalidateOnRefresh: true
-        }
-      });
-
-      // Los números grandes se mueven un poco menos: parallax dentro de la escena
-      const nums = gsap.utils.toArray('.menu__num', track);
-      const numTween = gsap.to(nums, {
-        xPercent: 18,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: pin,
-          start: 'top top',
-          end: () => '+=' + (distance() + window.innerHeight * 0.4),
-          scrub: 1,
-          invalidateOnRefresh: true
-        }
-      });
-
-      return () => {
-        tween.scrollTrigger && tween.scrollTrigger.kill();
-        numTween.scrollTrigger && numTween.scrollTrigger.kill();
-        tween.kill();
-        numTween.kill();
-        gsap.set(track, { x: 0 });
-        gsap.set(nums, { xPercent: 0 });
-      };
-    });
-
-    // --- Mobile: entrada suave de cada tarjeta, el swipe lo hace el browser ---
-    mm.add('(max-width: 899px)', () => {
-      const cards = gsap.utils.toArray('.menu__card', track);
-      const tween = gsap.from(cards, {
-        opacity: 0,
-        y: 28,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.08,
-        scrollTrigger: { trigger: viewport, start: 'top 85%', once: true }
-      });
-      return () => {
-        tween.scrollTrigger && tween.scrollTrigger.kill();
-        tween.kill();
-        gsap.set(cards, { clearProps: 'all' });
-      };
-    });
-
-    // El viewport es focuseable: flechas para navegar sin mouse ni gestos
-    viewport.addEventListener('keydown', (e) => {
-      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-      const card = $('.menu__card', track);
-      if (!card) return;
-      const step = card.getBoundingClientRect().width + 16;
-      viewport.scrollBy({ left: e.key === 'ArrowRight' ? step : -step, behavior: 'smooth' });
-    });
-  }
-
-  /* ==========================================================================
-     9. REVEALS GENÉRICOS
-     Split en títulos, clip-path en imágenes, parallax suave.
-     ====================================================================== */
-  function initReveals() {
-    if (!hasGSAP || reduced()) return;
-
-    // --- Títulos con split (todos menos el hero, que ya se animó) ---
-    $$('.js-split').forEach((el) => {
-      if (el.classList.contains('hero__title')) return;
-      if (el.classList.contains('historia__closing-text')) return; // lo maneja initHistoria
-      const words = splitWords(el);
-      if (!words.length) return;
-      gsap.set(words, { yPercent: 115 });
-      gsap.to(words, {
-        yPercent: 0,
-        duration: 0.9,
-        ease: 'power3.out',
-        stagger: 0.045,
-        scrollTrigger: { trigger: el, start: 'top 85%', once: true }
-      });
-    });
-
-    // --- Bloques que suben al entrar ---
-    const blocks = [
-      '.contador__inner > *',
-      '.resenas__stat',
-      '.resenas__source',
-      '.slider',
-      '.galeria__filters',
-      '.info-list__row',
-      '.llegar__lead',
-      '.llegar__warn',
-      '.llegar__actions',
-      '.menu__foot-box',
-      '.cta__text',
-      '.cta__inner .btn'
-    ];
-    blocks.forEach((sel) => {
-      const els = gsap.utils.toArray(sel);
-      if (!els.length) return;
-      gsap.from(els, {
-        opacity: 0,
-        y: 24,
-        duration: 0.8,
-        ease: 'power3.out',
-        stagger: 0.07,
-        scrollTrigger: { trigger: els[0].parentElement || els[0], start: 'top 85%', once: true }
-      });
-    });
-
-    // --- Clip-path reveal en imágenes ---
-    $$('.menu__media, .llegar__map, .galeria__item').forEach((el) => {
-      gsap.fromTo(el,
-        { clipPath: 'inset(0% 0% 100% 0%)' },
-        {
-          clipPath: 'inset(0% 0% 0% 0%)',
-          duration: 1.1,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 90%', once: true }
-        }
-      );
-    });
-
-    // --- Parallax suave en fotos y fondos ---
-    // En táctil se saltea: son scrubs que corren en cada frame de scroll y es
-    // el efecto que menos aporta comparado con lo que cuesta.
-    if (esTactil) return;
-
-    $$('.menu__media img').forEach((img) => {
-      gsap.fromTo(img, { yPercent: -6 }, {
-        yPercent: 6,
-        ease: 'none',
-        scrollTrigger: { trigger: img.closest('.menu__card') || img, start: 'top bottom', end: 'bottom top', scrub: true }
-      });
-    });
-
-    const ctaBg = $('[data-cta-bg]');
-    if (ctaBg) {
-      gsap.fromTo(ctaBg, { yPercent: -8, scale: 1.08 }, {
-        yPercent: 8,
-        scale: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: '.cta', start: 'top bottom', end: 'bottom top', scrub: true }
-      });
-    }
-  }
-
-  /* ==========================================================================
-     10. SLIDER DE RESEÑAS
-     ====================================================================== */
-  function initSlider() {
-    const root = $('[data-slider]');
-    if (!root) return;
-
-    const track = $('[data-slider-track]', root);
-    const slides = $$('.slider__slide', root);
-    const dotsWrap = $('[data-slider-dots]', root);
-    const prev = $('[data-slider-prev]', root);
-    const next = $('[data-slider-next]', root);
-    if (!track || slides.length === 0) return;
-
-    let index = 0;
-    let timer = null;
-
-    // Cuántos slides se ven a la vez (1 en mobile, 2 en desktop): sale del CSS
-    const perView = () => {
-      const w = slides[0].getBoundingClientRect().width;
-      const vw = track.parentElement.getBoundingClientRect().width;
-      return Math.max(1, Math.round(vw / Math.max(1, w)));
-    };
-    const maxIndex = () => Math.max(0, slides.length - perView());
-
-    // Dots: uno por posición alcanzable. Se reconstruyen si cambia el ancho,
-    // porque perView pasa de 1 (mobile) a 2 (desktop).
-    const dots = [];
-    function buildDots() {
-      if (!dotsWrap) return;
-      const count = maxIndex() + 1;
-      if (dots.length === count) return;
-      // replaceChildren en vez de innerHTML: no pasa por el parser de HTML
-      dotsWrap.replaceChildren();
-      dots.length = 0;
-      const single = perView() === 1;
-      for (let i = 0; i < count; i++) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'slider__dot';
-        b.setAttribute('aria-label', single
-          ? 'Ir al testimonio ' + (i + 1)
-          : 'Ir al grupo de testimonios ' + (i + 1));
-        b.addEventListener('click', () => { go(i); restart(); });
-        dotsWrap.appendChild(b);
-        dots.push(b);
+    for (let i = 0; i < 8; i++) {
+      const d = (dow + i) % 7;
+      const slot = (SCHEDULE[d] || []).find(([a]) => i > 0 || a > t);
+      if (slot) {
+        const when = i === 0 ? 'hoy' : i === 1 ? 'mañana' : `el ${DAY_NAMES[d]}`;
+        return { open: false, text: `Cerrado. Abre ${when} a las ${fmtTime(slot[0])}` };
       }
     }
-
-    function go(i) {
-      index = clamp(i, 0, maxIndex());
-      const shift = index * 100 / perView();
-      track.style.transform = 'translate3d(-' + shift + '%, 0, 0)';
-      dots.forEach((d, di) => {
-        const active = di === index;
-        d.classList.toggle('is-active', active);
-        d.setAttribute('aria-current', active ? 'true' : 'false');
-      });
-      slides.forEach((s, si) => {
-        // Los slides fuera de vista no reciben foco por tab
-        s.toggleAttribute('inert', si < index || si >= index + perView());
-      });
-    }
-
-    const nextSlide = () => go(index >= maxIndex() ? 0 : index + 1);
-    const prevSlide = () => go(index <= 0 ? maxIndex() : index - 1);
-
-    if (next) next.addEventListener('click', () => { nextSlide(); restart(); });
-    if (prev) prev.addEventListener('click', () => { prevSlide(); restart(); });
-
-    // Teclado
-    root.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { nextSlide(); restart(); }
-      if (e.key === 'ArrowLeft') { prevSlide(); restart(); }
-    });
-
-    // Swipe
-    let startX = 0, startY = 0, dragging = false;
-    root.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      dragging = true;
-    }, { passive: true });
-    root.addEventListener('touchend', (e) => {
-      if (!dragging) return;
-      dragging = false;
-      const dx = e.changedTouches[0].clientX - startX;
-      const dy = e.changedTouches[0].clientY - startY;
-      if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy)) {
-        dx < 0 ? nextSlide() : prevSlide();
-        restart();
-      }
-    }, { passive: true });
-
-    // Autoplay: nunca con reduced-motion, y se pausa con hover/foco
-    function start() {
-      if (reduced() || maxIndex() === 0) return;
-      stop();
-      timer = window.setInterval(nextSlide, 6500);
-    }
-    function stop() { if (timer) { window.clearInterval(timer); timer = null; } }
-    function restart() { stop(); start(); }
-
-    root.addEventListener('pointerenter', stop);
-    root.addEventListener('pointerleave', start);
-    root.addEventListener('focusin', stop);
-    root.addEventListener('focusout', start);
-    document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
-
-    window.addEventListener('resize', () => { buildDots(); go(index); });
-    buildDots();
-    go(0);
-    start();
+    return { open: false, text: 'Viernes a domingo' };
+  }
+  const statusEl = $('[data-status]');
+  if (statusEl) {
+    const paint = () => {
+      const s = openStatus();
+      statusEl.classList.toggle('is-open', s.open);
+      $('[data-status-text]', statusEl).textContent = s.text;
+    };
+    paint();
+    setInterval(paint, 60000);
   }
 
-  /* ==========================================================================
-     11. GALERÍA — filtros + lightbox
-     ====================================================================== */
-  function initGallery() {
-    const grid = $('[data-gallery-grid]');
-    if (!grid) return;
+  /* -------------------------------------------------------------------
+     Reserva: arma el mensaje de WhatsApp
+     ------------------------------------------------------------------- */
+  const form = $('[data-booking]');
+  if (form) {
+    const state = { people: 2, day: null, shift: 'al mediodía' };
+    const peopleEl = $('[data-people]', form);
+    const platesEl = $('[data-plates]', form);
+    const daysEl = $('[data-days]', form);
+    const shiftBtns = $$('[data-shift]', form);
+    const shiftHelp = $('[data-shift-help]', form);
+    const preview = $('[data-preview]', form);
+    const link = $('[data-wa-link]', form);
 
-    const items = $$('.galeria__item', grid);
-    const chips = $$('.galeria__filters .chip');
-
-    /* ---------- Filtros ---------- */
-    function setVisible(cat) {
-      items.forEach((item) => {
-        const show = cat === 'all' || item.dataset.cat === cat;
-        item.hidden = !show;
+    // Próximos días de apertura (incluye hoy si todavía queda algún turno)
+    const now = nowInAR();
+    const t = now.getUTCHours() * 60 + now.getUTCMinutes();
+    const days = [];
+    for (let i = 0; i < 9 && days.length < 3; i++) {
+      const d = new Date(now.getTime() + i * 864e5);
+      const dow = d.getUTCDay();
+      const slots = SCHEDULE[dow];
+      if (!slots) continue;
+      if (i === 0 && !slots.some(([, b]) => t < b - 30)) continue;
+      const short = `${d.getUTCDate()}/${d.getUTCMonth() + 1}`;
+      days.push({
+        dow, i,
+        label: i === 0 ? 'Hoy' : `${DAY_NAMES[dow].slice(0, 3).replace(/^./, c => c.toUpperCase())} ${short}`,
+        text: i === 0 ? 'hoy' : `el ${DAY_NAMES[dow]} ${short}`,
+        slots
       });
     }
-
-    function applyFilter(cat) {
-      const visibleBefore = items.filter((i) => !i.hidden);
-
-      if (!hasGSAP || reduced()) {
-        setVisible(cat);
-        return;
-      }
-
-      // Salida -> reordeno visibilidad -> entrada escalonada
-      gsap.to(visibleBefore, {
-        opacity: 0,
-        y: 10,
-        duration: 0.22,
-        ease: 'power2.in',
-        onComplete: () => {
-          setVisible(cat);
-          const visibleAfter = items.filter((i) => !i.hidden);
-          gsap.fromTo(visibleAfter,
-            { opacity: 0, y: 18 },
-            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', stagger: 0.05, clearProps: 'transform' }
-          );
-          ScrollTrigger.refresh();
-        }
-      });
-    }
-
-    chips.forEach((chip) => {
-      chip.addEventListener('click', () => {
-        chips.forEach((c) => {
-          const active = c === chip;
-          c.classList.toggle('is-active', active);
-          c.setAttribute('aria-pressed', String(active));
-        });
-        applyFilter(chip.dataset.filter);
-      });
+    days.forEach((d, idx) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.textContent = d.label;
+      b.setAttribute('aria-pressed', idx === 0 ? 'true' : 'false');
+      b.addEventListener('click', () => { state.day = d; render(); });
+      daysEl.appendChild(b);
     });
+    state.day = days[0];
 
-    /* ---------- Lightbox ---------- */
-    const box = $('[data-lightbox]');
-    if (!box) return;
-
-    const boxImg = $('[data-lightbox-img]', box);
-    const boxCaption = $('[data-lightbox-caption]', box);
-    const btnPrev = $('[data-lightbox-prev]', box);
-    const btnNext = $('[data-lightbox-next]', box);
-    const closeEls = $$('[data-lightbox-close]', box);
-    const dialog = $('.lightbox__dialog', box);
-
-    let group = [];      // botones visibles al momento de abrir
-    let pos = 0;
-    let lastFocused = null;
+    form.addEventListener('click', e => {
+      const step = e.target.closest('[data-step]');
+      if (step) {
+        state.people = Math.min(30, Math.max(1, state.people + Number(step.dataset.step)));
+        render();
+      }
+      const sh = e.target.closest('[data-shift]');
+      if (sh && !sh.disabled) { state.shift = sh.dataset.shift; render(); }
+    });
 
     function render() {
-      const btn = group[pos];
-      if (!btn) return;
-      const img = $('img', btn);
-      boxImg.src = btn.dataset.full || (img ? img.src : '');
-      boxImg.alt = img ? img.alt : '';
-      boxCaption.textContent = btn.dataset.caption || (img ? img.alt : '');
-      const multi = group.length > 1;
-      btnPrev.hidden = !multi;
-      btnNext.hidden = !multi;
+      peopleEl.textContent = state.people;
+      $$('[data-step="-1"]', form)[0].disabled = state.people <= 1;
+      $$('[data-step="1"]', form)[0].disabled = state.people >= 30;
+
+      // Un raviol por persona
+      const want = Math.min(state.people, 30);
+      while (platesEl.children.length < want) {
+        platesEl.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 40 40"><use href="#i-ravioli"/></svg>');
+      }
+      while (platesEl.children.length > want) platesEl.lastElementChild.remove();
+
+      $$('.chip', daysEl).forEach((b, i) => b.setAttribute('aria-pressed', String(days[i] === state.day)));
+
+      // Turnos disponibles según el día
+      const d = state.day;
+      const hasNight = d && d.slots.length > 1;
+      const noonGone = d && d.i === 0 && t >= d.slots[0][1] - 30;
+      shiftBtns.forEach(b => {
+        const isNight = b.dataset.shift === 'a la noche';
+        b.disabled = isNight ? !hasNight : noonGone;
+      });
+      if (!hasNight) state.shift = 'al mediodía';
+      if (noonGone) state.shift = 'a la noche';
+      shiftBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shift === state.shift)));
+      shiftHelp.textContent = hasNight
+        ? 'Ese día hay mediodía (12 a 16 h) y noche (20:30 a 23 h).'
+        : 'Los domingos y feriados abrimos solo de 12 a 18 h.';
+
+      const who = state.people === 1 ? '1 persona' : `${state.people} personas`;
+      const msg = `¡Hola! Quiero reservar para ${who} ${d ? d.text : ''} ${state.shift}.`.replace(/\s+/g, ' ');
+      preview.textContent = msg;
+      link.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
     }
+    render();
 
-    function open(btn) {
-      group = items.filter((i) => !i.hidden).map((i) => $('.galeria__btn', i)).filter(Boolean);
-      pos = Math.max(0, group.indexOf(btn));
-      lastFocused = document.activeElement;
-
-      box.hidden = false;
-      render();
-      requestAnimationFrame(() => box.classList.add('is-open'));
-
-      if (lenis) lenis.stop();
-      document.body.style.overflow = 'hidden';
-      closeEls[0] && closeEls[0].focus();
-    }
-
-    function close() {
-      box.classList.remove('is-open');
-      if (lenis) lenis.start();
-      document.body.style.overflow = '';
-      const done = () => { box.hidden = true; boxImg.src = ''; };
-      reduced() ? done() : window.setTimeout(done, 240);
-      if (lastFocused && lastFocused.focus) lastFocused.focus();
-    }
-
-    const step = (d) => { pos = (pos + d + group.length) % group.length; render(); };
-
-    $$('.galeria__btn', grid).forEach((btn) => {
-      btn.addEventListener('click', () => open(btn));
+    link.addEventListener('click', () => {
+      const original = link.innerHTML;
+      link.innerHTML = '<svg width="22" height="22" aria-hidden="true"><use href="#i-whatsapp"/></svg>Abrimos WhatsApp con tu mensaje';
+      setTimeout(() => (link.innerHTML = original), 3500);
     });
+  }
 
-    closeEls.forEach((el) => el.addEventListener('click', close));
-    btnNext.addEventListener('click', () => step(1));
-    btnPrev.addEventListener('click', () => step(-1));
+  /* -------------------------------------------------------------------
+     Menú mobile
+     ------------------------------------------------------------------- */
+  const burger = $('[data-burger]');
+  const nav = $('#nav');
+  const setNav = open => {
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación');
+    nav.classList.toggle('is-open', open);
+  };
+  burger?.addEventListener('click', () => setNav(burger.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('is-open')) { setNav(false); burger.focus(); } });
 
-    document.addEventListener('keydown', (e) => {
-      if (box.hidden) return;
-      if (e.key === 'Escape') { e.preventDefault(); close(); }
-      if (e.key === 'ArrowRight') step(1);
-      if (e.key === 'ArrowLeft') step(-1);
+  /* -------------------------------------------------------------------
+     Opiniones: carrusel con botones, puntos y arrastre
+     ------------------------------------------------------------------- */
+  const notes = $('[data-notes]');
+  if (notes) {
+    const track = $('[data-notes-track]', notes);
+    const items = $$('.note', track);
+    const dots = $('[data-notes-dots]', notes);
+    const prev = $('[data-notes-prev]', notes);
+    const next = $('[data-notes-next]', notes);
+    items.forEach((_, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', `Ver opinión ${i + 1} de ${items.length}`);
+      b.addEventListener('click', () => go(i));
+      dots.appendChild(b);
+    });
+    const step = () => items[1].offsetLeft - items[0].offsetLeft;
+    const index = () => Math.round(track.scrollLeft / step());
+    const go = i => track.scrollTo({ left: Math.max(0, Math.min(items.length - 1, i)) * step(), behavior: reduced ? 'auto' : 'smooth' });
+    const sync = () => {
+      const i = index();
+      const max = track.scrollWidth - track.clientWidth - 4;
+      $$('button', dots).forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
+      prev.disabled = track.scrollLeft <= 4;
+      next.disabled = track.scrollLeft >= max;
+    };
+    prev.addEventListener('click', () => go(index() - 1));
+    next.addEventListener('click', () => go(index() + 1));
+    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
 
-      // Foco atrapado dentro del diálogo
-      if (e.key === 'Tab' && dialog) {
-        const focusables = $$('button:not([hidden])', dialog);
-        if (!focusables.length) return;
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
+    // Arrastrar con el mouse
+    let down = false, startX = 0, startLeft = 0, moved = false;
+    track.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse') return;
+      down = true; moved = false; startX = e.clientX; startLeft = track.scrollLeft;
+      track.style.scrollSnapType = 'none'; track.style.cursor = 'grabbing';
+    });
+    window.addEventListener('pointermove', e => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) moved = true;
+      track.scrollLeft = startLeft - dx;
+    });
+    window.addEventListener('pointerup', () => {
+      if (!down) return;
+      down = false; track.style.cursor = '';
+      const i = index();
+      track.style.scrollSnapType = '';
+      go(i);
+    });
+    track.addEventListener('click', e => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+    track.style.cursor = 'grab';
+  }
+
+  /* -------------------------------------------------------------------
+     Galería: filtros (con Flip si está) + lightbox
+     ------------------------------------------------------------------- */
+  const gallery = $('[data-gallery]');
+  if (gallery) {
+    const tiles = $$('.tile', gallery);
+    $$('[data-filter]').forEach(btn => btn.addEventListener('click', () => {
+      const cat = btn.dataset.filter;
+      $$('[data-filter]').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      const state = hasGSAP && window.Flip && !reduced ? Flip.getState(tiles) : null;
+      tiles.forEach(t => t.classList.toggle('is-hidden', cat !== 'all' && t.dataset.cat !== cat));
+      if (state) {
+        Flip.from(state, {
+          duration: .7, ease: 'power3.inOut', absolute: true, nested: true,
+          onEnter: els => gsap.fromTo(els, { opacity: 0, scale: .85 }, { opacity: 1, scale: 1, duration: .5, delay: .2 }),
+          onLeave: els => gsap.to(els, { opacity: 0, scale: .85, duration: .35 }),
+          onComplete: () => { gsap.set(tiles, { clearProps: 'all' }); ScrollTrigger.refresh(); }
+        });
+      } else if (hasGSAP) {
+        ScrollTrigger.refresh();
+      }
+    }));
+
+    // Lightbox
+    const lb = $('[data-lightbox]');
+    const lbImg = $('[data-lightbox-img]', lb);
+    const lbCap = $('[data-lightbox-caption]', lb);
+    let current = 0, lastFocus = null;
+    const visible = () => tiles.filter(t => !t.classList.contains('is-hidden'));
+    const show = i => {
+      const list = visible();
+      current = (i + list.length) % list.length;
+      const btn = $('button', list[current]);
+      const img = $('img', btn);
+      lbImg.src = img.currentSrc || img.src;
+      lbImg.alt = img.alt;
+      lbCap.textContent = btn.dataset.caption;
+      if (hasGSAP && !reduced) gsap.fromTo(lbImg, { opacity: 0, scale: .96 }, { opacity: 1, scale: 1, duration: .45, ease: 'power2.out' });
+    };
+    const open = tile => {
+      lastFocus = document.activeElement;
+      lb.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+      window.__lenis?.stop();
+      show(visible().indexOf(tile));
+      $('.lightbox__close', lb).focus();
+    };
+    const close = () => {
+      lb.hidden = true;
+      document.documentElement.style.overflow = '';
+      window.__lenis?.start();
+      lastFocus?.focus();
+    };
+    tiles.forEach(t => $('button', t).addEventListener('click', () => open(t)));
+    $$('[data-lightbox-close]', lb).forEach(b => b.addEventListener('click', close));
+    $('[data-lightbox-prev]', lb).addEventListener('click', () => show(current - 1));
+    $('[data-lightbox-next]', lb).addEventListener('click', () => show(current + 1));
+    document.addEventListener('keydown', e => {
+      if (lb.hidden) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+      if (e.key === 'Tab') { // foco atrapado dentro del diálogo
+        const f = $$('button', lb).filter(b => b.offsetParent);
+        const first = f[0], last = f[f.length - 1];
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       }
     });
-  }
-
-  /* ==========================================================================
-     12. VARIOS
-     ====================================================================== */
-  function initMisc() {
-    const year = $('[data-year]');
-    if (year) year.textContent = String(new Date().getFullYear());
-
-    // Mientras falten assets reales, una imagen que no carga se muestra como
-    // bloque de papel en vez del icono de imagen rota. Inofensivo en producción.
-    $$('img').forEach((img) => {
-      const flag = () => {
-        img.classList.add('is-missing');
-        const holder = img.closest('.menu__media, .galeria__btn, .historia__bg, .cta__bg');
-        if (holder) holder.classList.add('has-missing-img');
-      };
-      if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) flag();
-      img.addEventListener('error', flag, { once: true });
+    // Swipe en el lightbox
+    let sx = null;
+    lb.addEventListener('touchstart', e => (sx = e.touches[0].clientX), { passive: true });
+    lb.addEventListener('touchend', e => {
+      if (sx === null) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+      sx = null;
     });
+  }
 
-    // Las imágenes lazy cambian la altura de la página al cargar, pero llamar
-    // a ScrollTrigger.refresh() por cada una cuesta un recálculo completo de
-    // todos los triggers y se siente como un tirón. Se juntan en un solo
-    // refresh, y nunca mientras el usuario está scrolleando.
-    if (hasGSAP) {
-      let pendiente = null;
-
-      const pedirRefresh = () => {
-        if (pendiente) clearTimeout(pendiente);
-        pendiente = window.setTimeout(() => {
-          pendiente = null;
-          const scrolleando = typeof ScrollTrigger.isScrolling === 'function' &&
-                              ScrollTrigger.isScrolling();
-          if (scrolleando) { pedirRefresh(); return; }
-          ScrollTrigger.refresh();
-        }, 250);
-      };
-
-      window.addEventListener('load', pedirRefresh);
-      $$('img[loading="lazy"]').forEach((img) => {
-        img.addEventListener('load', pedirRefresh, { once: true });
-      });
+  /* -------------------------------------------------------------------
+     Mesada de ravioles: tablero + contador
+     ------------------------------------------------------------------- */
+  const board = $('[data-board]');
+  const CELLS = 120; // cada raviol del tablero vale 15
+  const cells = [];
+  const manual = new Set();
+  if (board) {
+    for (let i = 0; i < CELLS; i++) {
+      const c = document.createElement('span');
+      c.className = 'cell';
+      c.innerHTML = '<svg viewBox="0 0 40 40"><use href="#i-ravioli"/></svg>';
+      board.appendChild(c);
+      cells.push(c);
     }
+    // Cerrar ravioles con el dedo o el mouse
+    const pinch = e => {
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const cell = el && el.closest('.cell');
+      if (!cell) return;
+      const i = cells.indexOf(cell);
+      if (i < 0 || manual.has(i)) return;
+      manual.add(i);
+      cell.classList.add('on');
+    };
+    board.addEventListener('pointermove', pinch);
+    board.addEventListener('pointerdown', pinch);
+  }
+  const countEl = $('[data-ravioli-count]');
+  const setRavioli = p => {
+    const n = Math.round(p * CELLS);
+    cells.forEach((c, i) => c.classList.toggle('on', i < n || manual.has(i)));
+    if (countEl) countEl.textContent = nf.format(Math.round(p * 1800));
+  };
+
+  /* -------------------------------------------------------------------
+     Surtidor: ruedas del año
+     ------------------------------------------------------------------- */
+  const odo = $('[data-odometer]');
+  const odoLabel = $('[data-odometer-label]');
+  const strips = odo ? $$('.wheel__strip', odo) : [];
+  strips.forEach(s => (s.innerHTML = [...'0123456789'].map(d => `<span>${d}</span>`).join('')));
+  const setYear = y => {
+    const isToday = y === 'hoy';
+    const digits = String(isToday ? new Date().getFullYear() : y).padStart(4, '0');
+    strips.forEach((s, i) => (s.style.transform = `translateY(${-Number(digits[i]) * 1.3}em)`));
+    if (odoLabel) odoLabel.textContent = isToday ? 'Hoy' : y === '0000' ? 'Año' : `Año ${y}`;
+  };
+
+  /* -------------------------------------------------------------------
+     Sin GSAP o con movimiento reducido: estados finales y listo
+     ------------------------------------------------------------------- */
+  // Línea dentada como el borde de un raviol (progreso del menú)
+  let zig = 'M0 6';
+  for (let i = 1; i <= 100; i++) zig += ` L${i * 10 - 5} 1 L${i * 10} 6`;
+  $('[data-cutter-path]')?.setAttribute('d', zig);
+
+  const header = $('[data-header]');
+  const waFloat = $('[data-wa-float]');
+
+  if (!hasGSAP || reduced) {
+    document.documentElement.classList.remove('js'); // secciones con su propio color
+    setRavioli(1);
+    setYear('hoy');
+    $$('.event').forEach(e => e.classList.add('is-past'));
+    if (reduced) $('[data-hero-video]')?.pause();
+    const onScroll = () => {
+      header.classList.toggle('is-solid', window.scrollY > 40);
+      waFloat.classList.toggle('is-visible', window.scrollY > window.innerHeight * .8);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    // Contador de ruta y textos rellenos, ya completos
+    const rm = $('[data-route-min]'); if (rm) rm.textContent = '15';
+    // El header toma el color de la sección que está debajo
+    const io = new IntersectionObserver(entries => entries.forEach(en => {
+      if (en.isIntersecting) document.body.dataset.theme = en.target.dataset.themeSection;
+    }), { rootMargin: '-45% 0px -54% 0px' });
+    $$('[data-theme-section]').forEach(s => io.observe(s));
+    return;
   }
 
-  /* ==========================================================================
-     BOOT
-     ====================================================================== */
-  function boot() {
-    initSmoothScroll();
-    initAnchors();
-    initHeader();
-    initCursor();
-    initMagnetic();
-    initHeroVideo();
-    initHeroAnimation();
-    initHistoria();
-    initCounter();
-    initMenu();
-    initReveals();
-    initSlider();
-    initGallery();
-    initMisc();
+  /* ===================================================================
+     A partir de acá: movimiento con GSAP
+     =================================================================== */
+  gsap.registerPlugin(ScrollTrigger);
+  if (window.Flip) gsap.registerPlugin(Flip);
 
-    if (hasGSAP) ScrollTrigger.refresh();
+  // Scroll suave con Lenis, sincronizado con ScrollTrigger
+  let lenis = null;
+  if (window.Lenis) {
+    lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+    window.__lenis = lenis;
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(time => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot, { once: true });
-  } else {
-    boot();
+  // Anclas internas
+  $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    if (id.length < 2) return;
+    const target = $(id);
+    if (!target) return;
+    e.preventDefault();
+    setNav(false);
+    if (lenis) lenis.scrollTo(target, { offset: id === '#top' ? 0 : -8, duration: 1.4 });
+    else target.scrollIntoView();
+    history.replaceState(null, '', id);
+    target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+  }));
+
+  /* ---------- Partir texto en palabras ---------- */
+  function splitWords(el, cls = 'word') {
+    const words = el.textContent.trim().split(/\s+/);
+    el.setAttribute('aria-label', el.textContent.trim());
+    el.innerHTML = words.map(w => `<span class="${cls}" aria-hidden="true"><span>${w}</span></span>`).join(' ');
+    return $$(`.${cls} > span`, el);
   }
 
-  // Si el usuario cambia su preferencia de movimiento, recargamos el estado:
-  // es la forma más segura de desarmar pins y parallax sin dejar restos.
-  const onMotionChange = () => window.location.reload();
-  if (typeof motionQuery.addEventListener === 'function') {
-    motionQuery.addEventListener('change', onMotionChange);
-  } else if (typeof motionQuery.addListener === 'function') {
-    motionQuery.addListener(onMotionChange); // Safari viejo
+  /* ---------- Progreso, header y botón flotante ---------- */
+  gsap.to('[data-progress]', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: .3 } });
+
+  let lastY = window.scrollY;
+  const onScroll = () => {
+    const y = window.scrollY;
+    header.classList.toggle('is-solid', y > 40);
+    if (Math.abs(y - lastY) > 4) {
+      header.classList.toggle('is-hidden', y > lastY && y > window.innerHeight && !nav.classList.contains('is-open'));
+      lastY = y;
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  ScrollTrigger.create({
+    trigger: '[data-hero]', start: 'bottom 40%', endTrigger: '#reservar', end: 'top 70%',
+    onToggle: self => waFloat.classList.toggle('is-visible', self.isActive)
+  });
+
+  // Enlace activo en la navegación
+  $$('.nav a').forEach(a => {
+    const sec = $(a.getAttribute('href'));
+    if (!sec) return;
+    ScrollTrigger.create({
+      trigger: sec, start: 'top 50%', end: 'bottom 50%',
+      onToggle: self => a.setAttribute('aria-current', String(self.isActive))
+    });
+  });
+
+  /* ---------- El fondo de la página cambia de color por sección ---------- */
+  const setTheme = t => (document.body.dataset.theme = t);
+  ScrollTrigger.create({ trigger: '[data-hero]', start: 'top top', end: 'bottom 50%', onEnterBack: () => setTheme('night') });
+  $$('[data-theme-section]').forEach(sec => {
+    ScrollTrigger.create({
+      trigger: sec, start: 'top 55%', end: 'bottom 55%',
+      onEnter: () => setTheme(sec.dataset.themeSection),
+      onEnterBack: () => setTheme(sec.dataset.themeSection)
+    });
+  });
+
+  /* ---------- Hero: entrada orquestada ---------- */
+  const heroWords = splitWords($('.hero__title'));
+  const intro = gsap.timeline({ defaults: { ease: 'expo.out' } });
+  intro
+    .fromTo('[data-hero-video]', { opacity: 0, scale: 1.4 }, { opacity: 1, scale: 1.12, duration: 1.8, ease: 'expo.out' })
+    .from('[data-sign]', { scale: 0, rotate: -160, duration: 1.4, ease: 'back.out(1.6)' }, '-=.9')
+    .from(heroWords, { yPercent: 110, duration: 1.1, stagger: .06 }, '-=1')
+    .from('[data-hero-fade]', { y: 16, opacity: 0, duration: .8, stagger: .12 }, '-=.7')
+    .from(header, { yPercent: -100, duration: .8, clearProps: 'transform' }, '-=.9');
+
+  // Hero: al bajar, el video se recorta como una foto y el texto se va
+  const heroTl = gsap.timeline({
+    scrollTrigger: { trigger: '[data-hero]', start: 'top top', end: 'bottom top', scrub: true }
+  });
+  heroTl
+    .fromTo('[data-hero-media]', { clipPath: 'inset(0% 0% 0% 0% round 0px)' }, { clipPath: 'inset(6% 5% 14% 5% round 28px)', ease: 'none' }, 0)
+    .to('[data-hero-video]', { yPercent: 8, ease: 'none' }, 0)
+    .to('.hero__inner', { yPercent: -18, opacity: 0, ease: 'power1.in' }, 0)
+    .to('[data-sign]', { rotate: 120, scale: .6, ease: 'none' }, 0);
+
+  /* ---------- Marquesina: velocidad y sentido según el scroll ---------- */
+  const mTrack = $('[data-marquee-track]');
+  if (mTrack) {
+    mTrack.innerHTML += mTrack.innerHTML; // copia para el loop
+    let x = 0, dir = 1, boost = 0;
+    const half = () => mTrack.scrollWidth / 2;
+    ScrollTrigger.create({
+      trigger: '[data-marquee]', start: 'top bottom', end: 'bottom top',
+      onUpdate: self => { dir = self.direction; boost = Math.min(Math.abs(self.getVelocity()) / 120, 18); }
+    });
+    gsap.ticker.add((t, dt) => {
+      boost *= .92;
+      x -= (0.6 + boost) * dir * (dt / 16.7);
+      const w = half();
+      if (x <= -w) x += w;
+      if (x > 0) x -= w;
+      mTrack.style.transform = `translate3d(${x}px,0,0)`;
+    });
   }
+
+  /* ---------- Menú: scroll horizontal pinneado + ruedita de cortar ---------- */
+  const menu = $('#menu');
+  const menuTrack = $('[data-menu-track]');
+  const menuView = $('[data-menu-viewport]');
+  const cutterPathBase = $('[data-cutter-path]');
+  const wheel = $('[data-cutter-wheel]');
+  const cutPath = cutterPathBase.cloneNode();
+  cutPath.classList.add('cut');
+  cutterPathBase.after(cutPath);
+  const setCutter = p => {
+    const line = wheel.parentElement.clientWidth - 40;
+    gsap.set(wheel, { x: p * line, rotate: p * 900 });
+    cutPath.style.clipPath = `inset(0 ${100 - p * 100}% 0 0)`;
+  };
+  setCutter(0);
+
+  const mm = gsap.matchMedia();
+  mm.add('(min-width: 900px)', () => {
+    menu.classList.add('is-pinned');
+    const dist = () => menuTrack.scrollWidth - menuView.clientWidth + parseFloat(getComputedStyle(menuView).paddingLeft) * 2;
+    const tween = gsap.to(menuTrack, {
+      x: () => -Math.max(0, dist()),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: menu, pin: '[data-menu-pin]', start: 'top top',
+        end: () => '+=' + Math.max(dist(), window.innerHeight * .6),
+        scrub: .8, invalidateOnRefresh: true, refreshPriority: 1,
+        onUpdate: self => setCutter(self.progress)
+      }
+    });
+    // Parallax de cada foto dentro del recorrido horizontal
+    $$('.dish', menuTrack).forEach(d => {
+      gsap.fromTo($('img', d), { xPercent: -8 }, {
+        xPercent: 8, ease: 'none',
+        scrollTrigger: { trigger: d, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true }
+      });
+      gsap.from($('.dish__num', d), {
+        yPercent: 60, opacity: 0, ease: 'back.out(2)', duration: .8,
+        scrollTrigger: { trigger: d, containerAnimation: tween, start: 'left 85%', toggleActions: 'play none none reverse' }
+      });
+    });
+    return () => menu.classList.remove('is-pinned');
+  });
+  mm.add('(max-width: 899px)', () => {
+    const onS = () => {
+      const max = menuView.scrollWidth - menuView.clientWidth;
+      setCutter(max > 0 ? menuView.scrollLeft / max : 0);
+    };
+    menuView.addEventListener('scroll', onS, { passive: true });
+    onS();
+    gsap.from('.dish', { x: 80, opacity: 0, stagger: .1, duration: .9, ease: 'expo.out', scrollTrigger: { trigger: menuView, start: 'top 80%' } });
+    return () => menuView.removeEventListener('scroll', onS);
+  });
+  // Flechas del teclado en el carrusel del menú
+  menuView.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault();
+    const st = ScrollTrigger.getAll().find(s => s.pin && s.trigger === menu);
+    const delta = e.key === 'ArrowRight' ? 1 : -1;
+    if (st && lenis) {
+      const stepPx = (st.end - st.start) / 3;
+      lenis.scrollTo(Math.min(st.end, Math.max(st.start, window.scrollY + delta * stepPx)), { duration: .9 });
+    } else {
+      menuView.scrollBy({ left: delta * 320, behavior: 'smooth' });
+    }
+  });
+
+  // Etiqueta de precio que se "pega" al entrar
+  gsap.from('.price', {
+    scale: 1.6, rotate: 12, opacity: 0, duration: .9, ease: 'back.out(2.2)',
+    scrollTrigger: { trigger: '.price', start: 'top 85%' }
+  });
+
+  /* ---------- Reseñas ---------- */
+  const quote = $('[data-fill-text]');
+  if (quote) {
+    const fw = splitWords(quote, 'fw-wrap');
+    fw.forEach(s => s.classList.add('fw'));
+    ScrollTrigger.create({
+      trigger: quote, start: 'top 85%', end: 'bottom 45%', scrub: true,
+      onUpdate: self => {
+        const n = Math.round(self.progress * fw.length);
+        fw.forEach((w, i) => w.classList.toggle('on', i < n));
+      }
+    });
+  }
+  $$('[data-count]').forEach(el => {
+    const to = parseFloat(el.dataset.count);
+    const dec = Number(el.dataset.decimals || 0);
+    const obj = { v: 0 };
+    el.textContent = '0';
+    gsap.to(obj, {
+      v: to, duration: 2, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 90%' },
+      onUpdate: () => (el.textContent = obj.v.toLocaleString('es-AR', { minimumFractionDigits: dec, maximumFractionDigits: dec }))
+    });
+  });
+  gsap.from('.stars path, .stars use', { scale: 0, transformOrigin: '50% 50%', stagger: .08, duration: .5, ease: 'back.out(3)', scrollTrigger: { trigger: '.stars', start: 'top 90%' } });
+  // Las notas se reparten como cartas
+  gsap.from('.note', {
+    x: 160, y: 40, rotate: 10, opacity: 0, duration: 1, stagger: .12, ease: 'expo.out',
+    scrollTrigger: { trigger: '[data-notes]', start: 'top 85%' }
+  });
+
+  /* ---------- 1.800 raviolones ---------- */
+  setRavioli(0);
+  ScrollTrigger.create({
+    trigger: '[data-counter-section]', start: 'top 65%', end: 'bottom 75%', scrub: true,
+    onUpdate: self => setRavioli(self.progress)
+  });
+
+  // Harina en el aire: se aparta del puntero
+  const canvas = $('[data-flour]');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    const sec = canvas.parentElement;
+    let w = 0, h = 0, dpr = 1, running = false, mx = -999, my = -999;
+    const motes = Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.8 + .4, s: Math.random() * .25 + .05, vx: 0, vy: 0, a: Math.random() * .5 + .15 }));
+    const size = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = sec.clientWidth; h = sec.clientHeight;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    const frame = () => {
+      if (!running) return;
+      ctx.clearRect(0, 0, w, h);
+      for (const m of motes) {
+        let px = m.x * w, py = m.y * h;
+        const dx = px - mx, dy = py - my, d2 = dx * dx + dy * dy;
+        if (d2 < 14000) { const f = (14000 - d2) / 14000; m.vx += dx * f * .004; m.vy += dy * f * .004; }
+        m.vx *= .94; m.vy *= .94;
+        px += m.vx; py += m.vy - m.s;
+        if (py < -5) py = h + 5;
+        if (px < -5) px = w + 5; if (px > w + 5) px = -5;
+        m.x = px / w; m.y = py / h;
+        ctx.globalAlpha = m.a;
+        ctx.fillStyle = '#F2ECE2';
+        ctx.beginPath(); ctx.arc(px, py, m.r, 0, Math.PI * 2); ctx.fill();
+      }
+      requestAnimationFrame(frame);
+    };
+    sec.addEventListener('pointermove', e => { const r = sec.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
+    sec.addEventListener('pointerleave', () => { mx = my = -999; });
+    window.addEventListener('resize', size);
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting && !running) { size(); running = true; frame(); }
+      else if (!en.isIntersecting) running = false;
+    }).observe(sec);
+  }
+
+  /* ---------- Historia ---------- */
+  setYear('0000');
+  gsap.to('[data-story-bg]', { yPercent: -12, ease: 'none', scrollTrigger: { trigger: '#historia', start: 'top bottom', end: 'bottom top', scrub: true } });
+  gsap.to('[data-rail-fill]', { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '[data-timeline]', start: 'top 60%', end: 'bottom 60%', scrub: true } });
+  const events = $$('.event');
+  events.forEach((ev, i) => {
+    ScrollTrigger.create({
+      trigger: ev, start: 'top 60%', end: 'bottom 60%',
+      onToggle: self => {
+        if (!self.isActive) return;
+        events.forEach((e, k) => { e.classList.toggle('is-active', k === i); e.classList.toggle('is-past', k < i); });
+        setYear(ev.dataset.year);
+      }
+    });
+  });
+  ScrollTrigger.create({
+    trigger: '[data-timeline]', start: 'top 60%',
+    onLeaveBack: () => { events.forEach(e => e.classList.remove('is-active', 'is-past')); setYear('0000'); }
+  });
+  gsap.from('.pump', { y: 60, opacity: 0, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: '.pump', start: 'top 90%' } });
+  const coda = $('.story__coda');
+  if (coda) {
+    const cw = splitWords(coda);
+    gsap.from(cw, { yPercent: 110, stagger: .05, duration: .9, ease: 'expo.out', scrollTrigger: { trigger: coda, start: 'top 80%' } });
+  }
+
+  /* ---------- Galería: las fotos se destapan ---------- */
+  ScrollTrigger.batch('.tile', {
+    start: 'top 92%', once: true,
+    onEnter: batch => gsap.fromTo(batch,
+      { clipPath: 'inset(100% 0% 0% 0%)' },
+      { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, stagger: .1, ease: 'expo.inOut', clearProps: 'clipPath' })
+  });
+
+  /* ---------- Cómo llegar: la ruta se dibuja ---------- */
+  const routePath = $('[data-route-path]');
+  if (routePath) {
+    const L = routePath.getTotalLength();
+    const lane = routePath.cloneNode();
+    lane.removeAttribute('data-route-path');
+    lane.setAttribute('class', 'route__lane');
+    $('.route__road').after(lane);
+    routePath.style.strokeDasharray = `${L} ${L}`;
+    const pin = $('[data-route-pin]');
+    const minEl = $('[data-route-min]');
+    const drawRoute = p => {
+      routePath.style.strokeDashoffset = String(L * (1 - p));
+      const pt = routePath.getPointAtLength(L * p);
+      pin.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
+      minEl.textContent = Math.round(p * 15);
+    };
+    drawRoute(0);
+    ScrollTrigger.create({
+      trigger: '.route', start: 'top 85%', end: 'bottom 35%', scrub: .6,
+      onUpdate: self => drawRoute(self.progress)
+    });
+  }
+
+  /* ---------- Reserva ---------- */
+  gsap.fromTo('[data-book-bg]', { scale: 1.25 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '#reservar', start: 'top bottom', end: 'bottom bottom', scrub: true } });
+  const bookTitle = $('.book__title');
+  if (bookTitle) {
+    const bw = splitWords(bookTitle);
+    gsap.from(bw, { yPercent: 110, rotate: 6, stagger: .07, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: bookTitle, start: 'top 80%' } });
+  }
+  gsap.from('.ticket', { y: 120, rotate: 4, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.ticket', start: 'top 90%' } });
+
+  /* ---------- Footer: la frase se desliza ---------- */
+  gsap.fromTo('[data-footer-big]', { xPercent: 15 }, { xPercent: -45, ease: 'none', scrollTrigger: { trigger: '.footer', start: 'top bottom', end: 'bottom bottom', scrub: true } });
+
+  /* ---------- Títulos de sección: subida de palabras ---------- */
+  $$('#menu-title, #historia-title, #galeria-title, #llegar-title').forEach(h => {
+    const ws = splitWords(h);
+    gsap.from(ws, { yPercent: 110, stagger: .05, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: h, start: 'top 85%' } });
+  });
+
+  /* ---------- Botones magnéticos ---------- */
+  if (finePointer) {
+    $$('[data-magnetic]').forEach(btn => {
+      const xTo = gsap.quickTo(btn, 'x', { duration: .5, ease: 'power3.out' });
+      const yTo = gsap.quickTo(btn, 'y', { duration: .5, ease: 'power3.out' });
+      btn.addEventListener('pointermove', e => {
+        const r = btn.getBoundingClientRect();
+        xTo((e.clientX - r.left - r.width / 2) * .25);
+        yTo((e.clientY - r.top - r.height / 2) * .35);
+      });
+      btn.addEventListener('pointerleave', () => { xTo(0); yTo(0); });
+    });
+  }
+
+  // Recalcular cuando cargan fuentes e imágenes
+  document.fonts?.ready.then(() => ScrollTrigger.refresh());
+  window.addEventListener('load', () => ScrollTrigger.refresh());
 })();

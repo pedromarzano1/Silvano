@@ -6,3 +6,7 @@ fuentes/
 
 # Documentación interna del proyecto.
 README.md
+
+# Capturas del README y licencia: solo para GitHub.
+docs/
+LICENSE

@@ -1,411 +1,112 @@
-# Silvano · Tomás Jofré — landing page
+# Silvano: restaurante de campo desde 1924
 
-Sitio estático de una página. Sin build step, sin dependencias instalables.
-HTML + CSS + JS vanilla, con GSAP/ScrollTrigger y Lenis desde CDN.
+Sitio web para **Silvano**, el primer restaurante de Tomás Jofré (Buenos Aires): un almacén de ramos generales de 1924 donde cuatro generaciones amasan la misma receta de raviolones.
 
-**Orden de la página:** hero → menú → reseñas → historia → contador →
-galería → cómo llegar → CTA final.
+**Sitio en vivo:** [silvano-lilac.vercel.app](https://silvano-lilac.vercel.app)
 
-```
-index.html      estructura + SEO + schema.org
-styles.css      tokens en :root y estilos por sección
-main.js         smooth scroll, pins, reveals, slider, galería, lightbox
-vercel.json     headers y cache para el deploy estático
-.vercelignore   deja afuera las capturas originales de Instagram
-assets/img/     imágenes
-assets/video/   video del hero (pendiente)
-vendor/         GSAP, ScrollTrigger y Lenis servidos desde el propio dominio
-fuentes/        capturas y fotos originales (no se publican, ver .vercelignore)
-privacidad.html, terminos.html, 404.html
-robots.txt, sitemap.xml, security.txt
-```
+![Inicio del sitio con el cartel de Silvano sobre el video de los raviolones](docs/hero.png)
 
----
+## La idea
 
-## 1. Paleta
+La identidad visual sale del propio lugar, no de una plantilla:
 
-Muestreada pixel a pixel del logo y del Instagram, no elegida a ojo.
-Todo está definido en `:root` en [styles.css](styles.css).
+| Elemento del lugar | Cómo aparece en el sitio |
+| --- | --- |
+| Cartel rojo de la fachada (1924) | Sello animado del inicio y color de acción |
+| Surtidor YPF celeste (1934) | Contador de años de la sección Historia |
+| Papel madera del almacén | Fondo principal con textura de fibra |
+| Mesada de granito y harina | Sección "1.800 raviolones" con moteado y harina flotante |
+| Ladrillo de la fachada | Fondo de la línea de tiempo |
 
-| Token | Hex | De dónde sale |
-|---|---|---|
-| `--c-red` | `#E93223` | el rombo del logo. Titulares y números grandes |
-| `--c-red-cta` | `#D62A1B` | botones (blanco encima: 4,99:1) |
-| `--c-red-text` | `#BE1F0E` | texto chico en rojo sobre fondo claro (4,96:1) |
-| `--c-red-dark` | `#A81D11` | hover / pressed |
-| `--c-sky` | `#9ECBD9` | el surtidor del logo. Detalles **solo sobre oscuro** |
-| `--c-espresso` | `#251713` | la barra oscura de su menú de Instagram |
-| `--c-wood` | `#6B5649` | la madera de las mesas en sus fotos |
-| `--c-bone` | `#F7F3EE` | fondo claro |
-| `--c-bone-deep` | `#ECE5DC` | fondo alterno |
-| `--c-graphite` | `#3D3330` | texto corrido (11,1:1) |
+Tipografía: **Abril Fatface** (letra de afiche de época) y **Karla** para el texto.
 
-Dos advertencias si tocás la paleta:
+## Interacciones con el scroll
 
-- **El celeste no se puede usar sobre fondo claro.** `#9ECBD9` sobre `#F7F3EE`
-  da 1,6:1. Está reservado para las secciones oscuras (historia, CTA, footer),
-  donde llega a 9,9:1.
-- **El rojo del logo no pasa AA como texto chico.** `#E93223` sobre hueso da
-  3,84:1: sirve para títulos grandes y para el rombo, no para un párrafo. Por
-  eso existen `--c-red-cta` y `--c-red-text`.
+- **Inicio:** el video se recorta como una foto al bajar y el cartel gira.
+- **Color de fondo:** cambia suavemente entre secciones (papel, granito, ladrillo).
+- **Menú:** queda fijo y los cuatro pasos se desplazan en horizontal; una ruedita de cortar ravioles marca el avance.
+- **1.800 raviolones por día:** un tablero se llena de ravioles con el scroll y se pueden "cerrar" con el mouse o el dedo.
+- **Historia:** un surtidor YPF gira sus dígitos de 1905 a hoy mientras avanza la línea de tiempo.
+- **Cómo llegar:** la ruta Mercedes–Tomás Jofré se dibuja y cuenta los 15 minutos.
+- **Marquesina:** acelera y cambia de sentido según la velocidad del scroll.
 
----
+![Menú en scroll horizontal con la ruedita de cortar ravioles](docs/menu.png)
+![Línea de tiempo con el surtidor YPF marcando 1934](docs/historia.png)
 
-## 2. Assets
+## Funciones
 
-### Ya resueltos, recortados de las capturas de Instagram
+- **Abierto o cerrado en tiempo real**, calculado con la hora de Argentina.
+- **Reserva guiada:** se eligen personas, día (próximo viernes, sábado o domingo) y turno, y se genera el mensaje de WhatsApp. Los turnos que no existen se deshabilitan (el domingo no hay noche).
+- **Galería** con filtros animados (GSAP Flip) y visor con teclado y swipe.
 
-| Archivo | Origen | Qué es |
-|---|---|---|
-| `logo-silvano.png` (256²) | `fuentes/logo.png` | recorte circular con alpha, sin el botón de corazón de Instagram |
-| `favicon-64.png`, `apple-touch-icon.png` | `fuentes/logo.png` | lo mismo, en chico |
-| `hero-poster.jpg` (1920×1054) | `fuentes/menu.png` | raviolones crudos sobre la mesada |
-| `menu-01-entrada.jpg` | `fuentes/picada.png` | salame, jamón crudo, queso y pan |
-| `menu-02-pastas.jpg` | `fuentes/ravioles-estofado.png` | raviolones con estofado |
-| `menu-03-postre.jpg` | `fuentes/zabaglione.png` | zabaglione en copa |
-| `galeria-pastas-01.jpg` | `fuentes/ravioles-oliva.png` | raviolones con oliva y queso |
-| `galeria-pastas-02.jpg` | `fuentes/tallarines.png` | tallarines con manteca y queso |
-| `galeria-pastas-03.jpg` | `fuentes/menu.png` | raviolones crudos (foto ancha) |
-| `galeria-pastas-04.jpg` | `fuentes/ravioles-estofado.png` | el estofado, recorte cuadrado |
-| `cta-bg.jpg`, `og-image.jpg` | `fuentes/ravioles-estofado.png` | fondo del CTA y preview de WhatsApp |
-| `historia-1934.jpg` | `fuentes/fachada.webp` | la fachada: hito 1934 de la timeline |
-| `galeria-historia-02.jpg` | `fuentes/fachada.webp` | la fachada con el cartel, recorte ancho |
-| `galeria-jardin-01.jpg` | `fuentes/cien-anios.webp` | el cartel de los 100 años en el patio (recortado para dejar afuera a la persona del borde) |
-| `menu-04-bebida.jpg` | `fuentes/bebidas.jfif` | gaseosa, agua y el vaso con limón sobre la mesa |
-| `historia-1905.jpg` | `fuentes/fachada.webp` | la casa vieja, el árbol y el carro |
-| `historia-1924.jpg` | `fuentes/cien-anios.webp` | la pared de ladrillo del propio local |
-| `historia-1963.jpg` | `fuentes/cien-anios.webp` | la puerta y el salón que se ve adentro |
-| `historia-hoy.jpg` | `fuentes/menu.png` | los raviolones recién cerrados |
+![Formulario de reserva que arma el mensaje de WhatsApp](docs/reserva.png)
 
-Todos se recortaron sacando la interfaz de Instagram (barra de estado, botón
-Seguir, el texto de la story y el marco rojo).
+## Tecnología
 
-### La timeline es compacta, sin pin
+- HTML, CSS y JavaScript, sin framework ni paso de build
+- [GSAP](https://gsap.com) con ScrollTrigger y Flip para las animaciones
+- [Lenis](https://lenis.darkroom.engineering) para el scroll suave
+- Librerías servidas desde el propio dominio, sin CDNs
+- Publicado en [Vercel](https://vercel.com)
 
-La sección de historia estuvo pinneada: quedaba fija y había que scrollear
-5 pantallas (luego 3) para pasar los cinco hitos antes de poder seguir bajando.
-Eso es scroll-jacking y es la queja más común contra este patrón: el usuario
-siente que la página no lo deja avanzar.
+## Accesibilidad y rendimiento
 
-Ahora los cinco hitos entran juntos en una pantalla, sobre una sola imagen de
-fondo, y el scroll nunca se detiene. Se eliminaron el pin, el crossfade de
-cinco fondos, la barra de progreso y los marcadores de año: menos código,
-menos ScrollTriggers y mejor rendimiento en celular.
+- Responsive de 360 px a pantallas grandes (celular, tablet, iPad y PC)
+- Respeta `prefers-reduced-motion`: sin animaciones, la página se ve completa
+- Navegación con teclado, foco visible, enlace para saltar al contenido y foco atrapado en el visor de fotos
+- Si las librerías no cargan, todo el contenido sigue visible
+- Datos estructurados de restaurante (schema.org) para buscadores
 
-### El fondo de la timeline es una foto actual, no de archivo
+## Correr en local
 
-Cuatro hitos (1905, 1924, 1963 y hoy) no tienen foto de época. En vez de dejar
-bloques de color, se usan recortes de **fotos actuales del propio local**: la
-pared de ladrillo, la puerta, los árboles, la pasta. Van detrás de un velo al
-94 % de opacidad, así que se leen como atmósfera y no como documento histórico.
-Tienen `alt=""` porque son decorativas: ningún texto afirma que sean de época.
-
-`historia-fondo.jpg` es la fachada actual, muy oscurecida por un velo: funciona
-como atmósfera, no como documento. Lleva `alt=""` y ningún texto afirma que sea
-de época.
-
-Al pasar a una sola imagen se eliminaron los otros cuatro fondos, que eran
-recortes repetidos de las mismas tres escenas y se notaban como tales.
-
-**Dónde buscarlas** (para 1905, 1924 y 1963):
-
-- **La familia.** Gerardo es la cuarta generación y el restaurante ya tiene
-  fotos de familia colgadas en la pared. Es la fuente más probable y más rápida.
-- **Archivo Histórico Municipal de Mercedes** y el museo local.
-- **Archivo General de la Nación**, Departamento de Documentos Fotográficos.
-- **Archivo histórico de YPF**, para el surtidor de 1934.
-- El **Facebook del restaurante** y los grupos de historia y turismo de
-  Tomás Jofré, donde suele circular material viejo del pueblo.
-- Diarios de Mercedes, que a veces publicaron notas sobre el lugar.
-
-Un escaneo de una foto vieja, aun con marcas y desgaste, va a quedar mejor que
-cualquier reemplazo: la sección es sobre el paso del tiempo.
-
-### Todavía en placeholder (bloque de color)
-
-| Archivo | Medidas | Qué hace falta |
-|---|---|---|
-| `galeria-salon-01.jpg` | 1200×1200 | el salón por dentro |
-
-Soltá el archivo con el mismo nombre en `assets/img/` y pisa al placeholder,
-sin tocar código. Exportar a ~80 % de calidad, apuntando a menos de 300 KB.
-
-### Video del hero
-
-`assets/video/hero-silvano.mp4` — H.264, **1280×720 horizontal**, 10 s, 3,2 MB,
-con `faststart` (arranca sin esperar la descarga completa). Sin texto
-sobreimpreso, para no competir con el título del hero.
-
-Conserva una pista de audio de **157 KB (4,9 % del archivo)**. El `<video>` va
-muteado, así que nunca suena: es solo peso de más. No se quitó a mano porque
-reescribir el contenedor MP4 sin herramientas es más riesgoso que el ahorro.
-
-Reemplaza a una versión anterior vertical de 384×848, que en desktop se
-agrandaba 6,4× y mostraba solo el 22 % del cuadro.
-
-Para quitarla bien, con `ffmpeg` (`winget install Gyan.FFmpeg` en Windows):
+No necesita instalación, pero hay que servir la carpeta (los scripts usan rutas absolutas):
 
 ```bash
-# Saca el audio sin tocar el video: es copia directa, no recomprime.
-ffmpeg -i hero-silvano.mp4 -an -c:v copy -movflags +faststart hero-sin-audio.mp4
-
-# Generar el webm, que pesa ~30 % menos en navegadores que lo soportan.
-ffmpeg -i hero-silvano.mp4 -an -c:v libvpx-vp9 -crf 34 -b:v 0 hero-silvano.webm
-```
-
-Si generás el `.webm`, agregalo en `index.html` como un `<source>` **antes**
-del mp4: el navegador usa el primero que puede reproducir.
-
----|---|---|---|
-| `assets/video/video-silvano.mp4` | H.264, yuv420p | 1920×1080 | < 3 MB |
-| `assets/video/video-silvano.webm` | VP9 (opcional) | 1920×1080 | < 2 MB |
-
-Con el `.mp4` solo alcanza: el navegador ignora el `<source>` que no existe.
-El `.webm` es opcional y pesa bastante menos, si llegás a generarlo.
-
-Loop de 8–12 s, sin audio. Mientras no esté, el hero muestra `hero-poster.jpg`
-y el zoom-out con scroll funciona igual.
-
-```bash
-ffmpeg -i tu-video.mov -t 10 -an -vf "scale=1920:-2" -c:v libx264 -crf 26 -pix_fmt yuv420p -movflags +faststart assets/video/video-silvano.mp4
-ffmpeg -i tu-video.mov -t 10 -an -vf "scale=1920:-2" -c:v libvpx-vp9 -crf 34 -b:v 0 assets/video/video-silvano.webm
-```
-
----
-
-## 3. Datos a confirmar
-
-Marcados en el código con `data-placeholder` (borde punteado rojo) o con
-comentarios `A CONFIRMAR` / `FALTA FOTO REAL`.
-
-**Del menú.** El texto se tomó del menú que publicaron en Instagram el
-1/3/2024, que difiere del brief original:
-
-| | Brief original | Instagram (lo que quedó) |
-|---|---|---|
-| Pastas | raviolones de verdura y **pollo** | raviolones de verdura y **carne** |
-| Postre | flan, dulce de zapallo, higos en almíbar, almendrado | helados, frutas en almíbar y flan casero |
-| Bebidas | agua, gaseosas y vino | gaseosas, vino de la casa, **soda** y agua |
-| Vegetariano | raviolones de ricota y nuez | no figura |
-
-La opción vegetariana se dejó en la página igual, marcada con un comentario.
-Una de las reseñas de Google la respalda: menciona "predisposición para realizar
-platos veganos" y unos "capeletis de ricota de almendras", así que parece que se
-hacen a pedido aunque no figuren en el menú impreso.
-
-**Precio:** $40.000 – $50.000 por persona, según lo indicado. Conviene revisarlo
-cada tanto: una reseña de hace 5 meses marcaba $30.000 – $40.000.
-
-**Reseñas:** son cuatro reseñas reales de Google. Se publica solo el nombre de
-pila, sin apellido. El texto está abreviado y con la puntuación ordenada, sin
-cambiar lo que dicen. No se indica la fuente en la tarjeta; si querés que diga
-"en Google", es una línea por testimonio.
-
-**El resto:**
-
-- URL real de la página de Facebook
-- Dominio final: cambiar `https://silvano.com.ar/` en el `canonical`, en Open
-  Graph y en el bloque `schema.org`
-- Coordenadas exactas en el `schema.org` (`geo`) y verificar que el pin del
-  mapa caiga en la puerta del restaurante
-
----
-
-## 4. Correr local
-
-No hay build. Hace falta servirlo por HTTP (abrir el archivo con `file://`
-rompe el video y el mapa embebido):
-
-```bash
-# Python
-python -m http.server 3000
-
-# o Node
 npx serve .
-
-# o Vercel CLI, que además aplica vercel.json
-npx vercel dev
 ```
 
-Después: http://localhost:3000
+## Estructura
+
+```
+├── index.html        página principal
+├── privacidad.html   política de privacidad
+├── terminos.html     términos y condiciones
+├── 404.html          página de error
+├── styles.css        tokens y estilos por sección
+├── main.js           scroll suave, animaciones, reserva, galería
+├── legales.js        año del pie en las páginas legales
+├── vercel.json       URLs limpias, cabeceras de seguridad y caché
+├── robots.txt, sitemap.xml, security.txt
+├── vendor/           GSAP, ScrollTrigger, Flip y Lenis
+├── assets/
+│   ├── img/          fotos del restaurante y logo
+│   └── video/        video del inicio
+├── fuentes/          material original (no se publica)
+└── docs/             capturas para este README (no se publica)
+```
+
+## Aspectos legales
+
+- **Política de privacidad** ([`privacidad.html`](privacidad.html)) según la Ley 25.326: datos técnicos, WhatsApp, servicios de terceros, transferencia internacional, derechos y la autoridad de control (AAIP).
+- **Términos y condiciones** ([`terminos.html`](terminos.html)): precios orientativos, reservas, alérgenos, propiedad intelectual (Ley 11.723), Defensa del Consumidor (Ley 24.240) y jurisdicción.
+- **Bebidas alcohólicas:** leyenda de la Ley 24.788 en el menú, el pie de página y los términos.
+- **Sin datos ni cookies propias:** la reserva se arma en el navegador y se envía por WhatsApp.
+- **Pendiente del restaurante:** completar razón social, CUIT y domicilio legal en las dos páginas legales (están marcados entre corchetes).
+
+## Seguridad
+
+- **Content Security Policy** estricta: `script-src 'self'` más el hash del único script inline, sin CDNs de terceros.
+- Librerías servidas desde el propio dominio ([`vendor/`](vendor)) con versiones congeladas.
+- HSTS, `X-Frame-Options: DENY`, `Permissions-Policy`, `Referrer-Policy` y aislamiento de origen, todo en [`vercel.json`](vercel.json).
+- [`security.txt`](security.txt) según RFC 9116.
+- Las URLs de `*.vercel.app` llevan `X-Robots-Tag: noindex`, así que la versión de prueba no compite en Google con el dominio final.
+
+## Aviso
+
+Este sitio es una **propuesta de rediseño** presentada a Restaurante Silvano. Hasta que el restaurante la apruebe, no es su sitio oficial.
+
+El código está bajo licencia MIT. El nombre, el logo, las fotografías y el video pertenecen a Restaurante Silvano y **no** están incluidos en esa licencia. Más detalles en [`LICENSE`](LICENSE).
 
 ---
 
-## 5. Deploy en Vercel desde GitHub
-
-**En línea:** https://silvano-lilac.vercel.app
-
-> **Identidad de los commits.** Este repositorio se despliega en Vercel bajo la
-> cuenta `pedromarzano1`. El plan Hobby solo despliega commits cuyo autor tenga
-> acceso al proyecto, y no admite colaboradores. Por eso el repo tiene fijada
-> su propia identidad de git:
->
-> ```
-> git config --local user.email "111799005+pedromarzano1@users.noreply.github.com"
-> ```
->
-> Sin eso, los commits quedan atribuidos a otra cuenta de GitHub y Vercel
-> bloquea el deploy con "the commit author doesn't have permission to create
-> deployments for this project".
-
-
-
-1. **Repo**
-
-   ```bash
-   git init
-   git add .
-   git commit -m "Landing Silvano"
-   git branch -M main
-   git remote add origin https://github.com/<usuario>/silvano.git
-   git push -u origin main
-   ```
-
-2. **Importar en Vercel**
-   - vercel.com → *Add New…* → *Project* → *Import Git Repository*
-   - Framework Preset: **Other**
-   - Build Command: vacío · Output Directory: vacío (raíz) · Install: vacío
-   - *Deploy*
-
-   Cada push a `main` redeploya solo. Las ramas generan preview URLs.
-
-3. **Dominio propio**
-   - Project → *Settings* → *Domains* → *Add* → `silvano.com.ar`
-   - En el DNS del registrante (NIC.ar o donde esté el dominio):
-     - apex `silvano.com.ar` → **A** `76.76.21.21`
-     - `www.silvano.com.ar` → **CNAME** `cname.vercel-dns.com`
-   - El certificado SSL lo emite Vercel solo, unos minutos después de que
-     propague el DNS.
-   - Una vez con dominio: actualizar `canonical`, `og:url` y `schema.org`.
-
----
-
-## 6. Seguridad
-
-### Qué previene cada cosa
-
-| Medida | Ataque que previene |
-|---|---|
-| `Content-Security-Policy` sin `unsafe-inline`/`unsafe-eval` en `script-src` | XSS: aunque alguien logre inyectar HTML, el navegador no ejecuta el script |
-| Librerías self-hosted en `/vendor` | Supply chain: un CDN comprometido ya no puede inyectar código |
-| `frame-ancestors 'none'` + `X-Frame-Options: DENY` | Clickjacking: nadie puede meter el sitio en un iframe y robar clics |
-| `rel="noopener noreferrer"` en los 11 links externos | Reverse tabnabbing: la pestaña abierta no puede reescribir la original |
-| `Strict-Transport-Security` con preload | SSL stripping y downgrade a HTTP |
-| `X-Content-Type-Options: nosniff` | Que un .jpg subido sea interpretado como script |
-| `base-uri 'none'` | Secuestro de rutas relativas vía `<base>` inyectado |
-| `form-action 'none'` | Que un formulario inyectado envíe datos a un servidor ajeno |
-| `Permissions-Policy` | Acceso a cámara, micrófono, ubicación y pagos desde código inyectado |
-| `Cross-Origin-Opener-Policy: same-origin` | Ataques entre ventanas (XS-Leaks) |
-| `sandbox` en el iframe de Google Maps | Que el mapa pueda navegar o actuar sobre la página que lo contiene |
-
-### Dos decisiones que conviene entender
-
-**`style-src-attr` permite `unsafe-inline`, y es a propósito.** GSAP y
-ScrollTrigger usan `element.style.cssText` (10 veces entre las dos librerías,
-verificado en el código). Una `style-src` totalmente estricta rompe los pins y
-las animaciones. La solución es separar las directivas:
-
-```
-style-src-elem 'self' https://fonts.googleapis.com;   <- hojas de estilo: estricto
-style-src-attr 'unsafe-inline';                        <- atributos style: permitido
-```
-
-Las hojas de estilo siguen bajo control estricto (nadie puede inyectar un
-`<style>` ni cargar CSS externo); lo único permitido es el atributo `style`,
-que es lo que GSAP necesita. Inline en `style` habilita exfiltración por CSS,
-que es mucho menos grave que ejecutar código. `style-src` queda como respaldo
-para navegadores que no soportan las directivas granulares.
-
-**El JSON-LD va por hash.** El bloque `application/ld+json` es el único script
-inline. Está declarado en la CSP con su SHA-256:
-
-```
-'sha256-4R4nwL/za69Oq0r5sb5HhgcIeRj96JJG+GRfIAQVX1A='
-```
-
-> **Si editás el JSON-LD, aunque sea un espacio, hay que recalcular el hash o
-> el bloque deja de validar.** Se recalcula con:
->
-> ```bash
-> python -c "import re,hashlib,base64,io; s=io.open('index.html',encoding='utf-8').read(); c=re.search(r'<script type=\"application/ld\+json\">(.*?)</script>',s,re.S).group(1); print('sha256-'+base64.b64encode(hashlib.sha256(c.encode()).digest()).decode())"
-> ```
-
-### Si algún día se agrega un formulario
-
-Hoy no hay ninguno y por eso `form-action` está en `'none'`. El mínimo para
-agregar uno:
-
-- Validación en cliente **y** en servidor. La del cliente es usabilidad, no
-  seguridad: se saltea con curl.
-- Campo honeypot oculto: si viene lleno, es un bot.
-- Rate limiting por IP.
-- Cloudflare Turnstile o reCAPTCHA v3.
-- Envío por una Vercel Function o Formspree. **Nunca poner el correo de destino
-  en el HTML**: se lo llevan los scrapers en minutos.
-- Actualizar la CSP: `form-action` tiene que apuntar al destino real, y
-  `connect-src` sumar el endpoint si el envío es por `fetch`.
-
-### Si algún día se agrega npm
-
-- Commitear `package-lock.json`.
-- `npm audit` en cada instalación.
-- Activar Dependabot en el repo (Settings → Code security).
-- Sin source maps en producción.
-
-### Checklist de infraestructura
-
-- [ ] 2FA en Vercel
-- [ ] 2FA en GitHub
-- [ ] 2FA en el registrador del dominio (NIC.ar para `.com.ar`)
-- [ ] Rama `main` protegida (Settings → Branches → Add rule)
-- [ ] HTTPS forzado (Vercel lo hace solo) y redirect `www` → apex en el panel
-- [ ] Registro **CAA** en el DNS: `0 issue "letsencrypt.org"`
-- [ ] **SPF** en el DNS: `v=spf1 -all` si el dominio no manda correo
-- [ ] **DMARC** en el DNS: `_dmarc` → `v=DMARC1; p=reject; rua=mailto:[CORREO]`
-- [ ] **Crear una casilla de correo** cuando exista el dominio (por ejemplo
-      `hola@silvano.com.ar`) y reemplazar el contacto de WhatsApp en
-      `security.txt`, `privacidad.html` y `terminos.html`. Hoy el único canal
-      documentado es WhatsApp, que es válido pero no ideal para ejercer
-      derechos de protección de datos.
-- [ ] Reemplazar `silvano.com.ar` por el dominio real en `canonical`, Open
-      Graph, `schema.org`, `robots.txt` y `sitemap.xml`
-
-Los registros SPF y DMARC importan aunque el dominio no mande correo:
-**sin ellos, cualquiera puede mandar mails falsificando el dominio** para
-phishing a nombre del restaurante.
-
-### Verificación post-deploy
-
-| Herramienta | Objetivo |
-|---|---|
-| [securityheaders.com](https://securityheaders.com) | **A+** |
-| [CSP Evaluator de Google](https://csp-evaluator.withgoogle.com) | Sin hallazgos de severidad alta |
-| [Mozilla Observatory](https://observatory.mozilla.org) | **A+** (90+) |
-| [SSL Labs](https://www.ssllabs.com/ssltest/) | **A** o **A+** |
-| Lighthouse (pestaña Chrome DevTools) | 90+ en las cuatro categorías |
-
-Pegá el dominio en cada una después del primer deploy con dominio propio. En el
-CSP Evaluator va a marcar `style-src-attr 'unsafe-inline'` como observación:
-es esperado y está explicado arriba.
-
-**Lo primero que hay que mirar después del deploy** es la consola del navegador
-(F12). Si la CSP bloquea algo, aparece ahí con el mensaje "Refused to load...".
-El sitio tiene que verse y animarse exactamente igual que en local.
-
----
-
-## 7. Notas técnicas
-
-- **Reduced motion**: con `prefers-reduced-motion: reduce` no se instancia
-  Lenis, no hay pins ni parallax, el video no se reproduce y la timeline de
-  historia y el menú se muestran como listas estáticas.
-- **Mobile**: el scroll horizontal del menú es un carrusel nativo con
-  `scroll-snap` y swipe; en desktop pasa a pin + traslación con GSAP, vía
-  `gsap.matchMedia()`.
-- **Performance**: imágenes con `loading="lazy"` y `width`/`height` para evitar
-  CLS, video con `preload="none"` que arranca recién cuando el hero está
-  visible, animaciones solo con `transform`/`opacity`, textura de grano como
-  SVG inline. El set de imágenes pesa 2,7 MB en total.
-- **Accesibilidad**: skip link, landmarks, `alt` en todas las imágenes, foco
-  visible, lightbox con foco atrapado y cierre con `Escape`, carrusel navegable
-  con flechas. Contrastes verificados contra WCAG AA (ver tabla de paleta).
+Diseño y desarrollo: **Pedro Marzano**

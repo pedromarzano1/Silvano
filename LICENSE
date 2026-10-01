@@ -1,0 +1,40 @@
+Este repositorio tiene dos tipos de contenido con condiciones distintas.
+
+1. CÓDIGO (index.html, privacidad.html, terminos.html, 404.html,
+   styles.css, main.js, legales.js)
+   Licencia MIT, detallada más abajo.
+
+   Las librerías de vendor/ no son parte de este código y mantienen sus
+   propias licencias: GSAP, ScrollTrigger y Flip (licencia estándar de
+   GreenSock, https://gsap.com/standard-license) y Lenis (MIT).
+
+2. CONTENIDO DE MARCA (carpetas assets/, fuentes/ y capturas de docs/)
+   El nombre "Silvano", el logo, las fotografías, el video y los textos
+   sobre la historia del restaurante pertenecen a Restaurante Silvano
+   (Tomás Jofré, Buenos Aires) o a sus respectivos autores. NO están
+   cubiertos por la licencia MIT. Se incluyen solo para mostrar este
+   trabajo y no pueden reutilizarse sin autorización de sus titulares.
+
+-----------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) 2026 Pedro Marzano
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
