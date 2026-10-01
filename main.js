@@ -750,8 +750,12 @@
   }
   gsap.from('.ticket', { y: 120, rotate: 4, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.ticket', start: 'top 90%' } });
 
-  /* ---------- Footer: la frase se desliza ---------- */
-  gsap.fromTo('[data-footer-big]', { xPercent: 15 }, { xPercent: -45, ease: 'none', scrollTrigger: { trigger: '.footer', start: 'top bottom', end: 'bottom bottom', scrub: true } });
+  /* ---------- Footer: la frase de cierre sube palabra por palabra ---------- */
+  const footerBig = $('[data-footer-big]');
+  if (footerBig) {
+    const fw = splitWords(footerBig);
+    gsap.from(fw, { yPercent: 110, stagger: .08, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: footerBig, start: 'top 85%' } });
+  }
 
   /* ---------- Títulos de sección: subida de palabras ---------- */
   $$('#menu-title, #historia-title, #galeria-title, #llegar-title').forEach(h => {
